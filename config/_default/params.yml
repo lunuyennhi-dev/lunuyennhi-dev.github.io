@@ -51,7 +51,7 @@ subtitle:
     showCursor: true            # 是否显示闪烁的字符
     cursorChar: "|"             # 字符
     smartBackspace: false       # 智能退格，只删除不同的部分
-  text: "少女祈祷中..."        # 当 typing.enable = false 时使用
+  text: "Welcome to my channel ><"        # 当 typing.enable = false 时使用
 
 banner: "images/banner.webp"
 # You can also write it in the form of the following url
@@ -653,7 +653,7 @@ home_categories:
 # Make sure your code snippet is safeHTML
 injector:
   head_begin:
-  head_end: '<style>[data-theme="dark"] { --color-wrap: rgba(15, 23, 42, 0.8); }</style>'
+  head_end: 
   body_begin:
   body_end:
   sidebar_begin: # Inject code snippet right after <aside>
