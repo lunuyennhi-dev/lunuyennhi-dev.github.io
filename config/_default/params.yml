@@ -652,13 +652,10 @@ home_categories:
 # Inject code snippet
 # Make sure your code snippet is safeHTML
 injector:
-  head_begin: <link rel="preload" as="image" href="/images/loading.png">
-  head_end:
-  body_begin:
-  body_end:
+  head_begin: 
   head_end: 
   body_begin:
-  body_end:
+  body_end: 
   sidebar_begin: # Inject code snippet right after <aside>
   sidebar_end: # Inject code snippet right before </aside>
 
