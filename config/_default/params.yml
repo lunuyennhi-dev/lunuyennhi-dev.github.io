@@ -7,16 +7,16 @@
 menu:
   - name: home
     url: ""
-    icon: f005 # default use taichi icon, you can use a hexadecimal representation of fontawesome or icon_font, like 'f0c1'
+    icon: images/icon.png # default use taichi icon, you can use a hexadecimal representation of fontawesome or icon_font, like 'f0c1'
   - name: archives
     url: "archives"
-    icon: f005
+    icon: images/icon.png
   - name: about
     url: "about"
-    icon: f005
+    icon: images/icon.png
   - name: friend
     url: "friend" 
-    icon: f005
+    icon: images/icon.png
 
 # friend links
 friends:
