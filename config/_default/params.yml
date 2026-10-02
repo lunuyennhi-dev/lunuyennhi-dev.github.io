@@ -652,8 +652,8 @@ home_categories:
 # Inject code snippet
 # Make sure your code snippet is safeHTML
 injector:
-  head_begin: '<link rel="icon" type="image/png" href="/images/loading.png">'
-  head_end: '<link rel="icon" type="image/png" href="/images/favicon.png">'
+  head_begin: 
+  head_end: 
   body_begin:
   body_end: 
   sidebar_begin: # Inject code snippet right after <aside>
