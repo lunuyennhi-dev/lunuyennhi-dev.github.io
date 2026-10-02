@@ -740,64 +740,70 @@ pangu:
 ########################################
 
 material_theme:
- enable: false 
+  enable: false 
 
 internal_theme:
- light:
-   # Tông Xanh Ngọc Frieren (Mystic Teal) - Dựa trên ảnh
-   --red-0: '#0a4650' # Xanh cổ vịt đậm (cho tiêu đề, viền đậm)
-   --red-1: '#20b2aa' # Xanh ngọc phát quang (Màu chủ đạo, nút bấm)
-   --red-2: '#4fd1c5' # Xanh mint sáng (dạng hover, nhấn mạnh nhẹ)
-   --red-3: '#81e6d9' # Xanh lam nhạt dịu (bôi đen, highlight)
-   --red-4: '#b2f5ea' # Xanh lơ trong trẻo (vùng chọn, nền phụ)
-   --red-5: '#e6fffa' # Nền xanh cực nhạt (nền chính)
-   --red-5-5: '#f0fdfa' 
-   --red-6: '#f3faf9' 
-   --color-red-6-shadow: 'rgba(32, 178, 170, 0.3)' # Đổ bóng dạ quang xanh nhẹ
-   --color-red-3-shadow: 'rgba(79, 209, 197, 0.2)' # Đổ bóng mint nhạt
+  light:
+    # Tông Xanh Biển (Ocean Blue)
+    --red-0: '#0f172a' # Xanh đen thẫm (Cho tiêu đề, chữ đậm)
+    --red-1: '#1d4ed8' # Xanh dương đậm (Màu chủ đạo, nút bấm, viền)
+    --red-2: '#3b82f6' # Xanh biển sáng (Màu khi hover, nhấn mạnh)
+    --red-3: '#93c5fd' # Xanh lơ nhạt (Bôi đen, highlight)
+    --red-4: '#bfdbfe' # Xanh mây trong trẻo
+    
+    # Nền box màu trắng pha chút xanh lơ, độ đục 80% (mờ 20% nhìn thấu nền)
+    --red-5: 'rgba(239, 246, 255, 0.8)' 
+    --red-5-5: 'rgba(219, 234, 254, 0.6)' 
+    --red-6: 'rgba(191, 219, 254, 0.4)' 
+    
+    --color-red-6-shadow: 'rgba(29, 78, 216, 0.3)' 
+    --color-red-3-shadow: 'rgba(59, 130, 246, 0.2)'
 
-   --highlight-nav: "#e6fffa" # Nền thanh điều hướng màu xanh cực nhạt
-   --highlight-scrollbar: "#b2f5ea" # Thanh cuộn màu xanh lơ
-   --highlight-background: "#fdfdfd" # Nền trắng
-   --highlight-selection: "#20b2aa33" # Bôi đen chữ ra màu xanh trong suốt
-   --highlight-foreground: "#1a1e21" # Chữ màu đen xám đậm
-   --highlight-comment: "#6c757d" # Chú thích màu xám
-   --highlight-red: "#d73a49"
-   --highlight-orange: "#e36209"
-   --highlight-yellow: "#cb911d"
-   --highlight-green: "#22863a"
-   --highlight-aqua: "#005cc5"
-   --highlight-blue: "#032f62"
-   --highlight-purple: "#6f42c1"
-   --highlight-deletion: "#b31d28"
-   --highlight-deletion-bg: "#ffeef0"
-   --highlight-addition: "#22863a"
-   --highlight-addition-bg: "#f0fff4"
- dark:
-   # Tông Xanh Ngọc Frieren (Mystic Teal) - Dark Mode
-   --red-0: '#e6fffa' # Chữ chính màu xanh cực nhạt
-   --red-1: '#20b2aa' # Xanh ngọc (vẫn là màu chủ đạo)
-   --red-2: '#81e6d9' # Xanh lam nhạt (hover, nhấn mạnh)
-   --red-3: '#4fd1c5' # Xanh mint sáng (dạng highlight phụ)
-   --red-4: 'rgba(32, 178, 170, 0.5)' # Xanh ngọc trong suốt (cho vùng chọn)
-   --red-5: 'rgba(10, 70, 80, 0.8)' # Nền phụ đậm tông xanh cổ vịt
-   --red-5-5: 'rgba(10, 70, 80, 0.6)' 
-   --red-6: 'rgba(10, 70, 80, 0.4)'
+    --highlight-nav: "rgba(255, 255, 255, 0.9)" 
+    --highlight-scrollbar: "#93c5fd"
+    --highlight-background: "rgba(255, 255, 255, 0.85)" 
+    --highlight-selection: "#1d4ed833" 
+    --highlight-foreground: "#1a1e21"
+    --highlight-comment: "#6c757d"
+    --highlight-red: "#d73a49"
+    --highlight-orange: "#e36209"
+    --highlight-yellow: "#cb911d"
+    --highlight-green: "#22863a"
+    --highlight-aqua: "#005cc5"
+    --highlight-blue: "#032f62"
+    --highlight-purple: "#6f42c1"
+    --highlight-deletion: "#b31d28"
+    --highlight-deletion-bg: "#ffeef0"
+    --highlight-addition: "#22863a"
+    --highlight-addition-bg: "#f0fff4"
+    
+  dark:
+    # Tông Xanh Biển Thẫm (Deep Navy) - Chế độ ban đêm
+    --red-0: '#eff6ff' # Chữ màu sáng
+    --red-1: '#3b82f6' # Xanh dương (Màu chủ đạo)
+    --red-2: '#60a5fa' 
+    --red-3: '#93c5fd' 
+    --red-4: 'rgba(30, 58, 138, 0.5)' 
+    
+    # Nền box xanh biển thẫm (Deep Navy), độ đục 80%
+    --red-5: 'rgba(10, 20, 40, 0.8)' 
+    --red-5-5: 'rgba(15, 23, 42, 0.7)' 
+    --red-6: 'rgba(30, 41, 59, 0.5)'
 
-   --highlight-nav: "#0a1416" # Nền thanh điều hướng siêu tối tông xanh
-   --highlight-scrollbar: "#20b2aa" # Thanh cuộn màu xanh ngọc
-   --highlight-background: "#050a0b" # Nền đen gần tuyệt đối tông xanh
-   --highlight-selection: "#20b2aa55" # Bôi đen chữ xanh ngọc rõ hơn trong dark mode
-   --highlight-foreground: "#c9d1d9" # Chữ màu xám trắng
-   --highlight-comment: "#8b949e"
-   --highlight-red: "#ff7b72"
-   --highlight-orange: "#ffa657"
-   --highlight-yellow: "#ffcc66"
-   --highlight-green: "#7ee787"
-   --highlight-aqua: "#a5d6ff"
-   --highlight-blue: "#79c0ff"
-   --highlight-purple: "#d2a8ff"
-   --highlight-deletion: "#ffa198"
-   --highlight-deletion-bg: "#490202"
-   --highlight-addition: "#7ee787"
-   --highlight-addition-bg: "#04260f"
+    --highlight-nav: "rgba(10, 20, 40, 0.9)" 
+    --highlight-scrollbar: "#3b82f6"
+    --highlight-background: "rgba(5, 10, 20, 0.85)" 
+    --highlight-selection: "#3b82f655" 
+    --highlight-foreground: "#c9d1d9"
+    --highlight-comment: "#8b949e"
+    --highlight-red: "#ff7b72"
+    --highlight-orange: "#ffa657"
+    --highlight-yellow: "#ffcc66"
+    --highlight-green: "#7ee787"
+    --highlight-aqua: "#a5d6ff"
+    --highlight-blue: "#79c0ff"
+    --highlight-purple: "#d2a8ff"
+    --highlight-deletion: "#ffa198"
+    --highlight-deletion-bg: "#490202"
+    --highlight-addition: "#7ee787"
+    --highlight-addition-bg: "#04260f"
