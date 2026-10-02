@@ -652,10 +652,10 @@ home_categories:
 # Inject code snippet
 # Make sure your code snippet is safeHTML
 injector:
-  head_begin: # Inject code snippet right after <head>
-  head_end: # Inject code snippet right before </head>
-  body_begin: # Inject code snippet right after <body>
-  body_end: # Inject code snippet right before </body>
+  head_begin:
+  head_end: '<style>[data-theme="dark"] { --color-wrap: rgba(15, 23, 42, 0.8); }</style>'
+  body_begin:
+  body_end:
   sidebar_begin: # Inject code snippet right after <aside>
   sidebar_end: # Inject code snippet right before </aside>
 
