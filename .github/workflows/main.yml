@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.138.0
+      HUGO_VERSION: 0.140.0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +46,7 @@ jobs:
           HUGO_ENVIRONMENT: production
         run: |
           hugo \
+            --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
 
