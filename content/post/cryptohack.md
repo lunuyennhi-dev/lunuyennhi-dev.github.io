@@ -96,11 +96,11 @@ print(f"q = {q}")
 > 
 > **Legendre Symbol & Euler's Criterion:**
 > The Legendre symbol $\left(\frac{x}{p}\right)$ quickly determines if $x$ is a QR modulo $p$:
-> $$ > \left(\frac{x}{p}\right) \equiv x^{\frac{p-1}{2}} \equiv \begin{cases} 1 & \text{if } x \in \text{QR}_p \\ -1 & \text{if } x \in \text{QNR}_p \end{cases} \pmod p > $$
+> $$  \left(\frac{x}{p}\right) \equiv x^{\frac{p-1}{2}} \equiv \begin{cases} 1 & \text{if } x \in \text{QR}_p \\ -1 & \text{if } x \in \text{QNR}_p \end{cases} \pmod p  $$
 > 
 > **Multiplicative Property:**
 > The Legendre symbol is multiplicative:
-> $$> \left(\frac{a \cdot b}{p}\right) = \left(\frac{a}{p}\right) \cdot \left(\frac{b}{p}\right) >$$
+> $$\left(\frac{a \cdot b}{p}\right) = \left(\frac{a}{p}\right) \cdot \left(\frac{b}{p}\right) $$
 > Specifically, when $p \equiv 3 \pmod 4$, $-1$ is always a quadratic non-residue: $\left(\frac{-1}{p}\right) = -1$.
 
 ---
