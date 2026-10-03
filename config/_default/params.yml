@@ -653,7 +653,151 @@ home_categories:
 # Make sure your code snippet is safeHTML
 injector:
   head_begin: 
-  head_end: 
+  head_end: |-
+    <style>
+      /* ==========================================
+         LUN'S SECRET
+         Midnight Blue × Frieren
+         ========================================== */
+
+      :root {
+        --color-background: #edf3fc;
+        --color-wrap: rgba(248, 251, 255, 0.88);
+        --color-header-background: rgba(241, 247, 255, 0.88);
+        --color-footer-background: rgba(235, 242, 252, 0.92);
+        --color-mobile-nav-background: rgba(240, 246, 255, 0.96);
+
+        --color-default: #172033;
+        --color-border: rgba(72, 111, 181, 0.28);
+        --color-link: #315eBA;
+
+        --color-code-background: rgba(225, 235, 250, 0.75);
+
+        --color-h2-border: rgba(72, 111, 181, 0.18);
+        --color-hover-shadow: rgba(42, 79, 140, 0.18);
+      }
+
+      [data-theme="dark"] {
+        --color-background: #070d18;
+        --color-wrap: rgba(14, 23, 39, 0.86);
+        --color-header-background: rgba(8, 14, 26, 0.82);
+        --color-footer-background: rgba(8, 14, 26, 0.90);
+        --color-mobile-nav-background: rgba(10, 18, 31, 0.96);
+
+        --color-default: #e7eefc;
+        --color-border: rgba(117, 164, 255, 0.20);
+        --color-link: #91b7ff;
+
+        --color-code-background: rgba(5, 11, 21, 0.88);
+
+        --color-h2-border: rgba(117, 164, 255, 0.16);
+        --color-hover-shadow: rgba(73, 119, 215, 0.22);
+      }
+
+      /* Main background */
+      body {
+        background:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(117, 164, 255, 0.10),
+            transparent 42%
+          ),
+          var(--color-background) !important;
+      }
+
+      /* Main wrapper */
+      #wrap {
+        background: var(--color-background) !important;
+      }
+
+      /* Header */
+      #header {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(7, 13, 24, 0.88),
+            rgba(7, 13, 24, 0.62)
+          ) !important;
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+
+      /* Content cards */
+      .post,
+      .post-block,
+      .card,
+      .friend-card {
+        background: var(--color-wrap) !important;
+
+        border: 1px solid var(--color-border);
+
+        box-shadow:
+          0 12px 35px rgba(0, 0, 0, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* Headings */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: var(--color-default);
+      }
+
+      /* Links */
+      a {
+        color: var(--color-link);
+        transition:
+          color 0.25s ease,
+          text-shadow 0.25s ease;
+      }
+
+      a:hover {
+        color: #b9ccff;
+        text-shadow:
+          0 0 12px rgba(117, 164, 255, 0.40);
+      }
+
+      /* Code */
+      pre {
+        background: var(--color-code-background) !important;
+        border: 1px solid rgba(117, 164, 255, 0.14);
+        border-radius: 10px;
+      }
+
+      code:not(pre code) {
+        background: rgba(117, 164, 255, 0.10);
+        color: #7fa8ff;
+      }
+
+      /* Text selection */
+      ::selection {
+        background: rgba(117, 164, 255, 0.35);
+        color: #fff;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar-thumb {
+        background: #6d9bff !important;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #0b1220 !important;
+      }
+
+      /* Subtle glow for important headings */
+      [data-theme="dark"] h1,
+      [data-theme="dark"] h2 {
+        text-shadow:
+          0 0 24px rgba(117, 164, 255, 0.10);
+      }
+    </style>
   body_begin:
   body_end: '<script src="/js/magic-click.js"></script>'
   sidebar_begin: # Inject code snippet right after <aside>
