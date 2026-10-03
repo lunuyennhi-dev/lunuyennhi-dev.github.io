@@ -1,14 +1,11 @@
 ---
 title: CRYPTOHACK
 description: CryptoHack write-ups and notes
-
 date: 2026-10-03
 lastmod: 2026-10-03
-
 tags:
   - CryptoHack
   - Cryptography
-
 categories:
   - Learning 
 ---
@@ -17,21 +14,11 @@ categories:
 
 **1. Challenge Description**
 
-Rearrange the following equations to recover the primes \(p,q\):
+Rearrange the following equations to recover the primes $p, q$:
 
-$$
-N = p \cdot q
-$$
+$$\begin{aligned} N &= p \cdot q \\ c_1 &\equiv (2p + 3q)^{e_1} \pmod N \\ c_2 &\equiv (5p + 7q)^{e_2} \pmod N \end{aligned}$$
 
-$$
-c_1 = (2p + 3q)^{e_1} \pmod N
-$$
-
-$$
-c_2 = (5p + 7q)^{e_2} \pmod N
-$$
-
-The goal is to recover the factorization of \(N\), i.e. \(p\) and \(q\).
+The goal is to recover the factorization of $N$, i.e., $p$ and $q$.
 
 ---
 
@@ -39,113 +26,37 @@ The goal is to recover the factorization of \(N\), i.e. \(p\) and \(q\).
 
 We have:
 
-$$
-\begin{cases}
-c_1 \equiv (2p + 3q)^{e_1} \pmod N \\
-c_2 \equiv (5p + 7q)^{e_2} \pmod N
-\end{cases}
-$$
+$$\begin{cases} c_1 \equiv (2p + 3q)^{e_1} \pmod N \\ c_2 \equiv (5p + 7q)^{e_2} \pmod N \end{cases}$$
 
-Raise the first equation to \(e_2\) and the second to \(e_1\):
+Raise the first equation to $e_2$ and the second to $e_1$:
 
-$$
-\begin{cases}
-c_1^{e_2} \equiv (2p + 3q)^{e_1e_2} \pmod N \\
-c_2^{e_1} \equiv (5p + 7q)^{e_1e_2} \pmod N
-\end{cases}
-$$
+$$\begin{cases} c_1^{e_2} \equiv (2p + 3q)^{e_1e_2} \pmod N \\ c_2^{e_1} \equiv (5p + 7q)^{e_1e_2} \pmod N \end{cases}$$
 
-Let
+Let $q_1 = c_1^{e_2} \pmod N$ and $q_2 = c_2^{e_1} \pmod N$.
 
-$$
-q_1 = c_1^{e_2} \pmod N
-$$
+Since $N = pq$, we can work modulo $q$. Because $q \equiv 0 \pmod q$, we have:
 
-and
-
-$$
-q_2 = c_2^{e_1} \pmod N.
-$$
-
-Since \(N=pq\), we can work modulo \(q\).
-
-Because
-
-$$
-q \equiv 0 \pmod q,
-$$
-
-we have:
-
-$$
-2p+3q \equiv 2p \pmod q
-$$
-
-and
-
-$$
-5p+7q \equiv 5p \pmod q.
-$$
+$$2p + 3q \equiv 2p \pmod q \quad \text{and} \quad 5p + 7q \equiv 5p \pmod q$$
 
 Therefore:
 
-$$
-q_1 \equiv (2p)^{e_1e_2} \pmod q
-$$
+$$q_1 \equiv (2p)^{e_1e_2} \pmod q \quad \text{and} \quad q_2 \equiv (5p)^{e_1e_2} \pmod q$$
 
-and
+Multiplying the first equation by $5^{e_1e_2}$ and the second by $2^{e_1e_2}$:
 
-$$
-q_2 \equiv (5p)^{e_1e_2} \pmod q.
-$$
-
-Multiplying the first equation by \(5^{e_1e_2}\):
-
-$$
-5^{e_1e_2}q_1
-\equiv
-(10p)^{e_1e_2}
-\pmod q.
-$$
-
-Similarly, multiplying the second equation by \(2^{e_1e_2}\):
-
-$$
-2^{e_1e_2}q_2
-\equiv
-(10p)^{e_1e_2}
-\pmod q.
-$$
+$$\begin{aligned} 5^{e_1e_2}q_1 &\equiv (10p)^{e_1e_2} \pmod q \\ 2^{e_1e_2}q_2 &\equiv (10p)^{e_1e_2} \pmod q \end{aligned}$$
 
 Hence,
 
-$$
-5^{e_1e_2}q_1
--
-2^{e_1e_2}q_2
-\equiv 0 \pmod q.
-$$
+$$5^{e_1e_2}q_1 - 2^{e_1e_2}q_2 \equiv 0 \pmod q$$
 
-So the following value is divisible by \(q\):
+So the following value is divisible by $q$:
 
-$$
-D =
-5^{e_1e_2}q_1
--
-2^{e_1e_2}q_2.
-$$
+$$D = 5^{e_1e_2}q_1 - 2^{e_1e_2}q_2$$
 
-Since \(q\mid D\) and \(q\mid N\), we can recover \(q\) using:
+Since $q \mid D$ and $q \mid N$, we can recover $q$ and $p$ using:
 
-$$
-q = \gcd(D,N).
-$$
-
-Then:
-
-$$
-p = \frac{N}{q}.
-$$
+$$q = \gcd(D, N) \quad \Rightarrow \quad p = \frac{N}{q}$$
 
 ---
 
