@@ -506,6 +506,6 @@ $$ -->
 
 ## 卡片
 
-{{<postLinkCard path="/post/chinese" cover="auto" >}}
+{{<postLinkCard path="/post/cryptohack" cover="auto" >}}
 
 {{<externalLinkCard title="Github" link="https://github.com/D-Sketon/hugo-theme-reimu" cover="https://github.githubassets.com/assets/apple-touch-icon-144x144-b882e354c005.png">}}
