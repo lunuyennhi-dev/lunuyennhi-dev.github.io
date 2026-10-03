@@ -12,6 +12,11 @@ tags:
 categories:
   - Learning 
 ---
+![CryptoHack](/images/covers/cryptohack.webp)
+
+## 1. Description
+
+...
 
 ## Modular Binomials
 
