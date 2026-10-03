@@ -3,6 +3,8 @@ title: CRYPTOHACK
 description: CryptoHack write-ups and notes
 date: 2026-10-03
 lastmod: 2026-10-03
+cover: "/images/covers/cryptohack.webp"
+banner: "/images/covers/cryptohack.webp"
 math: true
 tags:
   - CryptoHack
@@ -10,6 +12,7 @@ tags:
 categories:
   - Learning 
 ---
+![CryptoHack](/images/covers/cryptohack.webp)
 
 ## Modular Binomials
 
@@ -80,3 +83,69 @@ assert p * q == n
 
 print(f"p = {p}")
 print(f"q = {q}")
+```
+## Adrien's Signs
+
+**1. Challenge & Vulnerability Analysis**
+> <span style="color: #ff9800;">**1. Mathematical Prerequisites**</span>
+> 
+> **Quadratic Residue (QR):**
+> For an odd prime $p$ and an integer $x$ where $\gcd(x, p) = 1$:
+> * $x$ is a quadratic residue modulo $p$ ($x \in \text{QR}_p$) if there exists an integer $y$ such that: $y^2 \equiv x \pmod p$.
+> * Otherwise, $x$ is a quadratic non-residue ($x \in \text{QNR}_p$).
+> 
+> **Legendre Symbol & Euler's Criterion:**
+> The Legendre symbol $\left(\frac{x}{p}\right)$ quickly determines if $x$ is a QR modulo $p$:
+> $$  \left(\frac{x}{p}\right) \equiv x^{\frac{p-1}{2}} \equiv \begin{cases} 1 & \text{if } x \in \text{QR}_p \\ -1 & \text{if } x \in \text{QNR}_p \end{cases} \pmod p  $$
+> 
+> **Multiplicative Property:**
+> The Legendre symbol is multiplicative:
+> $$\left(\frac{a \cdot b}{p}\right) = \left(\frac{a}{p}\right) \cdot \left(\frac{b}{p}\right) $$
+> Specifically, when $p \equiv 3 \pmod 4$, $-1$ is always a quadratic non-residue: $\left(\frac{-1}{p}\right) = -1$.
+
+---
+
+
+
+
+
+
+The script converts the flag into a binary string and encrypts each bit $b$ using a random exponent $e$:
+* If $b = 1$, the ciphertext is $c \equiv a^e \pmod p$.
+* If $b = 0$, the ciphertext is $c \equiv -a^e \pmod p$.
+
+By evaluating the provided parameters $p$ and $a$, we observe two mathematical properties:
+1. $p \equiv 3 \pmod 4$, which means the Legendre symbol of $-1$ is $\left(\frac{-1}{p}\right) = -1$.
+2. $\left(\frac{a}{p}\right) = 1$, meaning $a$ is a Quadratic Residue (QR) modulo $p$.
+
+Since $a \in \text{QR}_p$, any power $a^e$ will always remain a QR, meaning $\left(\frac{a^e}{p}\right) = 1$. However, for $b = 0$, the ciphertext is negated, which flips its Legendre symbol:
+
+$$\begin{aligned} b = 1 &\implies \left(\frac{c}{p}\right) = \left(\frac{a^e}{p}\right) = 1 \\ b = 0 &\implies \left(\frac{c}{p}\right) = \left(\frac{-a^e}{p}\right) = \left(\frac{-1}{p}\right) \cdot \left(\frac{a^e}{p}\right) = -1 \end{aligned}$$
+
+> **Key Insight:** The sign flip directly alters the quadratic residue property. We can distinguish between bits `1` and `0` simply by computing the Legendre symbol using Euler's Criterion, bypassing the Discrete Logarithm Problem (DLP) completely.
+
+---
+
+**2. Solution Script**
+
+```python
+from Crypto.Util.number import long_to_bytes
+
+a = 288260533169915
+p = 1007621497415251
+# ciphertext = [...] 
+
+bits = ""
+for c in ciphertext:
+    # Compute Legendre symbol using Euler's Criterion
+    legendre = pow(c, (p - 1) // 2, p)
+    
+    if legendre == 1:
+        bits += "1"
+    else:
+        # legendre will be p-1 (which is equivalent to -1 mod p)
+        bits += "0"
+
+# Convert binary string back to bytes
+flag = int(bits, 2).to_bytes(len(bits) // 8, byteorder="big")
+print(f"[*] Flag: {flag.decode()}")
