@@ -60,7 +60,7 @@ Since $q \mid D$ and $q \mid N$, we can recover $q$ and $p$ using:
 
 $$q = \gcd(D, N) \quad \Rightarrow \quad p = \frac{N}{q}$$
 
-### 3, Solution
+### 3. Solution
 
 ```python
 from math import gcd
@@ -113,7 +113,7 @@ def encrypt_flag(flag):
 
 print(encrypt_flag(FLAG))
 ```
-### 2.Analysis
+### 2. Analysis
 > <span style="color: #ff9800;">**1. Mathematical Prerequisites**</span>
 > 
 > **Quadratic Residue (QR):**
@@ -153,7 +153,7 @@ $$\begin{aligned} b = 1 &\implies \left(\frac{c}{p}\right) = \left(\frac{a^e}{p}
 
 ---
 
-### 3. Solution Script
+### 3. Solution 
 
 ```python
 from Crypto.Util.number import long_to_bytes
