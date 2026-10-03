@@ -14,13 +14,17 @@ categories:
 
 **1. Challenge Description**
 
-Rearrange the following equations to recover the primes $p, q$:
+Rearrange the following equations to recover the primes `p`, `q`:
 
-<div>
-$$\begin{aligned} N &= p \cdot q \\ c_1 &\equiv (2p + 3q)^{e_1} \pmod N \\ c_2 &\equiv (5p + 7q)^{e_2} \pmod N \end{aligned}$$
-</div>
+$$
+\begin{aligned}
+N &= p \cdot q \\\\
+c\_1 &\equiv (2p + 3q)^{e\_1} \pmod N \\\\
+c\_2 &\equiv (5p + 7q)^{e\_2} \pmod N
+\end{aligned}
+$$
 
-The goal is to recover the factorization of $N$, i.e., $p$ and $q$.
+The goal is to recover the factorization of `N`, i.e., `p` and `q`.
 
 ***
 
@@ -28,53 +32,60 @@ The goal is to recover the factorization of $N$, i.e., $p$ and $q$.
 
 We have:
 
-<div>
-$$\begin{cases} c_1 \equiv (2p + 3q)^{e_1} \pmod N \\ c_2 \equiv (5p + 7q)^{e_2} \pmod N \end{cases}$$
-</div>
+$$
+\begin{cases}
+c\_1 \equiv (2p + 3q)^{e\_1} \pmod N \\\\
+c\_2 \equiv (5p + 7q)^{e\_2} \pmod N
+\end{cases}
+$$
 
-Raise the first equation to $e_2$ and the second to $e_1$:
+Raise the first equation to `e_2` and the second to `e_1`:
 
-<div>
-$$\begin{cases} c_1^{e_2} \equiv (2p + 3q)^{e_1e_2} \pmod N \\ c_2^{e_1} \equiv (5p + 7q)^{e_1e_2} \pmod N \end{cases}$$
-</div>
+$$
+\begin{cases}
+c\_1^{e\_2} \equiv (2p + 3q)^{e\_1 e\_2} \pmod N \\\\
+c\_2^{e\_1} \equiv (5p + 7q)^{e\_1 e\_2} \pmod N
+\end{cases}
+$$
 
-Let $q_1 = c_1^{e_2} \pmod N$ and $q_2 = c_2^{e_1} \pmod N$.
+Let `` `q_1 = c_1^{e_2} \pmod N` `` and `` `q_2 = c_2^{e_1} \pmod N` ``.
 
-Since $N = p \cdot q$, we can work modulo $q$. Because $q \equiv 0 \pmod q$, we have:
+Since `` `N = p \cdot q` ``, we can work modulo `q`. Because `` `q \equiv 0 \pmod q` ``, we have:
 
-<div>
-$$2p + 3q \equiv 2p \pmod q \quad \text{and} \quad 5p + 7q \equiv 5p \pmod q$$
-</div>
+$$
+2p + 3q \equiv 2p \pmod q \quad \text{and} \quad 5p + 7q \equiv 5p \pmod q
+$$
 
 Therefore:
 
-<div>
-$$q_1 \equiv (2p)^{e_1e_2} \pmod q \quad \text{and} \quad q_2 \equiv (5p)^{e_1e_2} \pmod q$$
-</div>
+$$
+q\_1 \equiv (2p)^{e\_1 e\_2} \pmod q \quad \text{and} \quad q\_2 \equiv (5p)^{e\_1 e\_2} \pmod q
+$$
 
-Multiplying the first equation by $5^{e_1e_2}$ and the second by $2^{e_1e_2}$:
+Multiplying the first equation by `` `5^{e_1 e_2}` `` and the second by `` `2^{e_1 e_2}` ``:
 
-<div>
-$$\begin{aligned} 5^{e_1e_2}q_1 &\equiv (10p)^{e_1e_2} \pmod q \\ 2^{e_1e_2}q_2 &\equiv (10p)^{e_1e_2} \pmod q \end{aligned}$$
-</div>
+$$
+\begin{aligned}
+5^{e\_1 e\_2}q\_1 &\equiv (10p)^{e\_1 e\_2} \pmod q \\\\
+2^{e\_1 e\_2}q\_2 &\equiv (10p)^{e\_1 e\_2} \pmod q
+\end{aligned}
+$$
 
 Hence,
 
-<div>
-$$5^{e_1e_2}q_1 - 2^{e_1e_2}q_2 \equiv 0 \pmod q$$
-</div>
+$$
+5^{e\_1 e\_2}q\_1 - 2^{e\_1 e\_2}q\_2 \equiv 0 \pmod q
+$$
 
-So the following value is divisible by $q$:
+So the following value is divisible by `q`:
 
-<div>
-$$D = 5^{e_1e_2}q_1 - 2^{e_1e_2}q_2$$
-</div>
+$$
+D = 5^{e\_1 e\_2}q\_1 - 2^{e\_1 e\_2}q\_2
+$$
 
-Since $q \mid D$ and $q \mid N$, we can recover $q$ and $p$ using:
+Since `` `q \mid D` `` and `` `q \mid N` ``, we can recover `q` and `p` using:
 
-<div>
 $$q = \gcd(D, N) \quad \Rightarrow \quad p = \frac{N}{q}$$
-</div>
 
 ***
 
