@@ -748,54 +748,51 @@ internal_theme:
   ######################################
   light:
 
-    # Main colors
-    --red-0: '#172033'
-    --red-1: '#315EBA'
-    --red-2: '#4F7FE3'
-    --red-3: '#8EADEF'
-    --red-4: '#C9D8F5'
+    # Primary palette
+    --red-0: '#101827'
+    --red-1: '#244A91'
+    --red-2: '#4779D1'
+    --red-3: '#8FAFEA'
+    --red-4: '#C8D8F4'
 
-    # Layered surfaces
-    --red-5: 'rgba(248, 250, 255, 0.94)'
-    --red-5-5: 'rgba(235, 241, 252, 0.90)'
-    --red-6: 'rgba(207, 220, 245, 0.72)'
+    # Glass surfaces
+    --red-5: 'rgba(235, 242, 253, 0.80)'
+    --red-5-5: 'rgba(211, 225, 247, 0.68)'
+    --red-6: 'rgba(171, 197, 235, 0.42)'
 
-    # Shadows
-    --color-red-6-shadow: 'rgba(25, 48, 95, 0.20)'
-    --color-red-3-shadow: 'rgba(49, 94, 186, 0.18)'
+    # Stronger shadows
+    --color-red-6-shadow: 'rgba(17, 38, 75, 0.32)'
+    --color-red-3-shadow: 'rgba(36, 74, 145, 0.24)'
 
     # Navigation
-    --highlight-nav: 'rgba(246, 249, 255, 0.96)'
+    --highlight-nav: 'rgba(242, 247, 255, 0.88)'
 
-    # Scrollbar
-    --highlight-scrollbar: '#4F7FE3'
+    --highlight-scrollbar: '#4779D1'
 
-    # Background
-    --highlight-background: 'rgba(248, 250, 255, 0.96)'
+    # Main background
+    --highlight-background: 'rgba(245, 248, 253, 0.92)'
 
-    # Text selection
-    --highlight-selection: '#4F7FE344'
+    # Selection
+    --highlight-selection: '#4779D155'
 
-    # Main text
-    --highlight-foreground: '#172033'
+    # Text
+    --highlight-foreground: '#101827'
+    --highlight-comment: '#5D6B82'
 
-    # Comments / secondary text
-    --highlight-comment: '#667085'
-
-    # Syntax highlighting
-    --highlight-red: '#C2414C'
-    --highlight-orange: '#C76A1B'
-    --highlight-yellow: '#A77A16'
-    --highlight-green: '#287A52'
-    --highlight-aqua: '#167B8F'
+    # Syntax
+    --highlight-red: '#C43D55'
+    --highlight-orange: '#C76B24'
+    --highlight-yellow: '#A77D16'
+    --highlight-green: '#287A58'
+    --highlight-aqua: '#187C91'
     --highlight-blue: '#315EBA'
-    --highlight-purple: '#7357B8'
+    --highlight-purple: '#7657B5'
 
-    --highlight-deletion: '#B4232F'
-    --highlight-deletion-bg: '#FDEBEC'
+    --highlight-deletion: '#B83248'
+    --highlight-deletion-bg: '#FBE8EC'
 
-    --highlight-addition: '#287A52'
-    --highlight-addition-bg: '#EAF7EF'
+    --highlight-addition: '#287A58'
+    --highlight-addition-bg: '#E7F5EE'
 
 
   ######################################
@@ -803,51 +800,48 @@ internal_theme:
   ######################################
   dark:
 
-    # Main text / primary colors
-    --red-0: '#F1F5FF'
-    --red-1: '#6D9BFF'
-    --red-2: '#86AEFF'
-    --red-3: '#AABFFF'
-    --red-4: '#334B7A'
+    # Primary palette
+    --red-0: '#F4F7FF'
+    --red-1: '#75A4FF'
+    --red-2: '#91B7FF'
+    --red-3: '#B6CAFF'
+    --red-4: '#40577F'
 
-    # Layered dark surfaces
-    --red-5: 'rgba(20, 27, 43, 0.94)'
-    --red-5-5: 'rgba(27, 36, 57, 0.88)'
-    --red-6: 'rgba(42, 53, 78, 0.72)'
+    # Deep layered surfaces
+    --red-5: 'rgba(13, 22, 38, 0.80)'
+    --red-5-5: 'rgba(20, 32, 53, 0.72)'
+    --red-6: 'rgba(42, 61, 91, 0.48)'
 
     # Shadows
-    --color-red-6-shadow: 'rgba(0, 0, 0, 0.45)'
-    --color-red-3-shadow: 'rgba(80, 125, 230, 0.25)'
+    --color-red-6-shadow: 'rgba(0, 0, 0, 0.55)'
+    --color-red-3-shadow: 'rgba(79, 126, 224, 0.30)'
 
     # Navigation
-    --highlight-nav: 'rgba(14, 20, 34, 0.96)'
+    --highlight-nav: 'rgba(8, 14, 25, 0.88)'
 
-    # Scrollbar
-    --highlight-scrollbar: '#6D9BFF'
+    --highlight-scrollbar: '#75A4FF'
 
     # Main background
-    --highlight-background: 'rgba(11, 16, 28, 0.96)'
+    --highlight-background: 'rgba(7, 13, 24, 0.92)'
 
-    # Text selection
-    --highlight-selection: '#6D9BFF44'
+    # Selection
+    --highlight-selection: '#75A4FF55'
 
-    # Main text
-    --highlight-foreground: '#DDE6FA'
+    # Text
+    --highlight-foreground: '#EAF1FF'
+    --highlight-comment: '#9AAAC4'
 
-    # Secondary text
-    --highlight-comment: '#9AA8C0'
-
-    # Syntax highlighting
-    --highlight-red: '#FF7B83'
+    # Syntax
+    --highlight-red: '#FF7F8A'
     --highlight-orange: '#FFB86B'
-    --highlight-yellow: '#E6C76A'
-    --highlight-green: '#72D6A0'
-    --highlight-aqua: '#6DD9E8'
-    --highlight-blue: '#7FA8FF'
-    --highlight-purple: '#C3A0FF'
+    --highlight-yellow: '#E8CC70'
+    --highlight-green: '#75D7A4'
+    --highlight-aqua: '#70D7E5'
+    --highlight-blue: '#8BB3FF'
+    --highlight-purple: '#C4A5FF'
 
-    --highlight-deletion: '#FF8A91'
-    --highlight-deletion-bg: '#421D24'
+    --highlight-deletion: '#FF8B96'
+    --highlight-deletion-bg: '#431D25'
 
-    --highlight-addition: '#72D6A0'
-    --highlight-addition-bg: '#163326'
+    --highlight-addition: '#75D7A4'
+    --highlight-addition-bg: '#163527'
