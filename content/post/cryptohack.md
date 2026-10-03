@@ -80,3 +80,47 @@ assert p * q == n
 
 print(f"p = {p}")
 print(f"q = {q}")
+```
+## Adrien's Signs
+
+**1. Challenge & Vulnerability Analysis**
+
+The script converts the flag into a binary string and encrypts each bit $b$ using a random exponent $e$:
+* If $b = 1$, the ciphertext is $c \equiv a^e \pmod p$.
+* If $b = 0$, the ciphertext is $c \equiv -a^e \pmod p$.
+
+By evaluating the provided parameters $p$ and $a$, we observe two mathematical properties:
+1. $p \equiv 3 \pmod 4$, which means the Legendre symbol of $-1$ is $\left(\frac{-1}{p}\right) = -1$.
+2. $\left(\frac{a}{p}\right) = 1$, meaning $a$ is a Quadratic Residue (QR) modulo $p$.
+
+Since $a \in \text{QR}_p$, any power $a^e$ will always remain a QR, meaning $\left(\frac{a^e}{p}\right) = 1$. However, for $b = 0$, the ciphertext is negated, which flips its Legendre symbol:
+
+$$\begin{aligned} b = 1 &\implies \left(\frac{c}{p}\right) = \left(\frac{a^e}{p}\right) = 1 \\ b = 0 &\implies \left(\frac{c}{p}\right) = \left(\frac{-a^e}{p}\right) = \left(\frac{-1}{p}\right) \cdot \left(\frac{a^e}{p}\right) = -1 \end{aligned}$$
+
+> **Key Insight:** The sign flip directly alters the quadratic residue property. We can distinguish between bits `1` and `0` simply by computing the Legendre symbol using Euler's Criterion, bypassing the Discrete Logarithm Problem (DLP) completely.
+
+---
+
+**2. Solution Script**
+
+```python
+from Crypto.Util.number import long_to_bytes
+
+a = 288260533169915
+p = 1007621497415251
+# ciphertext = [...] 
+
+bits = ""
+for c in ciphertext:
+    # Compute Legendre symbol using Euler's Criterion
+    legendre = pow(c, (p - 1) // 2, p)
+    
+    if legendre == 1:
+        bits += "1"
+    else:
+        # legendre will be p-1 (which is equivalent to -1 mod p)
+        bits += "0"
+
+# Convert binary string back to bytes
+flag = int(bits, 2).to_bytes(len(bits) // 8, byteorder="big")
+print(f"[*] Flag: {flag.decode()}")
