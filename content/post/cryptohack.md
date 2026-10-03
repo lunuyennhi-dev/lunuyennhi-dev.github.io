@@ -16,7 +16,7 @@ categories:
 
 ## Modular Binomials
 
-**1. Challenge Description**
+### 1. Challenge Description
 
 Rearrange the following equations to recover the primes $p, q$:
 
@@ -24,7 +24,7 @@ $$\begin{aligned} N &= p \cdot q \\ c_1 &\equiv (2p + 3q)^{e_1} \pmod N \\ c_2 &
 
 The goal is to recover the factorization of $N$, i.e., $p$ and $q$.
 
-**2. Analysis**
+### 2. Analysis
 
 We have:
 
@@ -60,7 +60,7 @@ Since $q \mid D$ and $q \mid N$, we can recover $q$ and $p$ using:
 
 $$q = \gcd(D, N) \quad \Rightarrow \quad p = \frac{N}{q}$$
 
-**3. Solution**
+### 3, Solution
 
 ```python
 from math import gcd
@@ -85,8 +85,36 @@ print(f"p = {p}")
 print(f"q = {q}")
 ```
 ## Adrien's Signs
+## Adrien's Signs
 
-**1. Challenge & Vulnerability Analysis**
+### 1. Challenge Source Code
+
+The challenge description states that Adrien has been looking at ways to encrypt his messages with the help of symbols and minus signs. Below is the provided `source.py` code:
+
+```python
+from random import randint
+
+a = 288260533169915
+p = 1007621497415251
+
+FLAG = b'crypto{????????????????????}'
+
+def encrypt_flag(flag):
+    ciphertext = []
+    plaintext = ''.join([bin(i)[2:].zfill(8) for i in flag])
+    for b in plaintext:
+        e = randint(1, p)
+        n = pow(a, e, p)
+        if b == '1':
+            ciphertext.append(n)
+        else:
+            n = -n % p
+            ciphertext.append(n)
+    return ciphertext
+
+print(encrypt_flag(FLAG))
+```
+### 2.Analysis
 > <span style="color: #ff9800;">**1. Mathematical Prerequisites**</span>
 > 
 > **Quadratic Residue (QR):**
@@ -126,7 +154,7 @@ $$\begin{aligned} b = 1 &\implies \left(\frac{c}{p}\right) = \left(\frac{a^e}{p}
 
 ---
 
-**2. Solution Script**
+### 3. Solution Script
 
 ```python
 from Crypto.Util.number import long_to_bytes
