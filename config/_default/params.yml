@@ -582,7 +582,7 @@ top:
   position: right # left or right
   icon:
     url: "/images/back-to-top.png"
-    rotate: false
+    rotate: true 
     mask: false # show the image's original colors
 
 # whether to display the notification when the article is outdated
