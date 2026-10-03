@@ -1,0 +1,201 @@
+// Reimu variable override for LUN's blog
+:root {
+  --red-0: #101827;
+  --red-1: #2f6fce;
+  --red-2: #6fa8ff;
+  --red-3: #9bc2ff;
+  --red-4: #c8dcff;
+
+  --grey-9: #68758a;
+  --grey-7: var(--color-default);
+  --color-archive-year: #101827;
+  --color-default: #253044;
+  --color-border: #6b9fe8;
+  --color-link: var(--red-1);
+  --color-background: #e9eef7;
+  --color-code-background: #eef3fa;
+  --color-header-background: rgba(248, 251, 255, 0.94);
+  --color-footer-background: #f4f7fc;
+  --color-mobile-nav-background: #f4f7fc;
+  --color-wrap: #f7f9fd;
+  --color-sticky: #ffffff;
+  --color-h2-border: #c5d5ed;
+  --color-h2-after: var(--red-1);
+  --color-meta-shadow: rgba(38, 75, 125, 0.18);
+  --color-hover-shadow: rgba(26, 55, 95, 0.18);
+
+  --color-red-6-shadow: #{$light-color-red-6-shadow};
+  --color-red-3-shadow: #{$light-color-red-3-shadow};
+  --highlight-nav: #{$light-highlight-nav};
+  --highlight-scrollbar: #{$light-highlight-scrollbar};
+  --highlight-background: #{$light-highlight-background};
+  --highlight-selection: #{$light-highlight-selection};
+  --highlight-foreground: #{$light-highlight-foreground};
+  --highlight-comment: #{$light-highlight-comment};
+  --highlight-red: #{$light-highlight-red};
+  --highlight-orange: #{$light-highlight-orange};
+  --highlight-yellow: #{$light-highlight-yellow};
+  --highlight-green: #{$light-highlight-green};
+  --highlight-aqua: #{$light-highlight-aqua};
+  --highlight-blue: #{$light-highlight-blue};
+  --highlight-purple: #{$light-highlight-purple};
+  --highlight-deletion: #{$light-highlight-deletion};
+  --highlight-deletion-bg: #{$light-highlight-deletion-bg};
+  --highlight-addition: #{$light-highlight-addition};
+  --highlight-addition-bg: #{$light-highlight-addition-bg};
+
+  --shadow-meta: 0 0 7px 2px var(--color-meta-shadow);
+  --shadow-meta-hover: 0 0 10px 4px var(--color-meta-shadow);
+  --shadow-card: 0 8px 24px rgba(26, 55, 95, 0.16);
+  --shadow-card-hover: 0 10px 30px rgba(26, 55, 95, 0.24);
+  --shadow-red-6-shadow: 0 0 10px var(--color-red-6-shadow);
+}
+
+[data-theme="dark"] {
+  &:root {
+    --red-0: #f1f6ff;
+    --red-1: #6fa8ff;
+    --red-2: #91bbff;
+    --red-3: #b8d1ff;
+    --red-4: #40577f;
+
+    /* Deep charcoal surfaces instead of the current grey haze */
+    --red-5: #151a23;
+    --red-5-5: #1c2330;
+    --red-6: #293447;
+
+    --color-archive-year: #eef5ff;
+    --color-default: #e3ebf8;
+    --color-border: #5d8fdc;
+    --color-background: #0c1017;
+    --color-code-background: #111722;
+    --color-header-background: rgba(10, 14, 21, 0.96);
+    --color-footer-background: #10151e;
+    --color-mobile-nav-background: #10151e;
+    --color-wrap: #151a23;
+    --color-sticky: #202938;
+    --color-h2-border: #2c3b52;
+    --color-h2-after: #6fa8ff;
+    --color-meta-shadow: rgba(0, 0, 0, 0.48);
+    --color-hover-shadow: rgba(0, 0, 0, 0.58);
+
+    --color-red-6-shadow: rgba(0, 0, 0, 0.48);
+    --color-red-3-shadow: rgba(82, 140, 230, 0.28);
+    --highlight-nav: #{$dark-highlight-nav};
+    --highlight-scrollbar: #{$dark-highlight-scrollbar};
+    --highlight-background: #{$dark-highlight-background};
+    --highlight-selection: #{$dark-highlight-selection};
+    --highlight-foreground: #{$dark-highlight-foreground};
+    --highlight-comment: #{$dark-highlight-comment};
+    --highlight-red: #{$dark-highlight-red};
+    --highlight-orange: #{$dark-highlight-orange};
+    --highlight-yellow: #{$dark-highlight-yellow};
+    --highlight-green: #{$dark-highlight-green};
+    --highlight-aqua: #{$dark-highlight-aqua};
+    --highlight-blue: #{$dark-highlight-blue};
+    --highlight-purple: #{$dark-highlight-purple};
+    --highlight-deletion: #{$dark-highlight-deletion};
+    --highlight-deletion-bg: #{$dark-highlight-deletion-bg};
+    --highlight-addition: #{$dark-highlight-addition};
+    --highlight-addition-bg: #{$dark-highlight-addition-bg};
+
+    --shadow-meta: 0 0 8px 2px rgba(0, 0, 0, 0.45);
+    --shadow-meta-hover: 0 0 12px 4px rgba(70, 120, 200, 0.18);
+    --shadow-card: 0 8px 26px rgba(0, 0, 0, 0.42);
+    --shadow-card-hover: 0 10px 32px rgba(70, 120, 200, 0.16);
+    --shadow-red-6-shadow: 0 0 10px rgba(82, 140, 230, 0.28);
+  }
+
+  img {
+    filter: brightness(70%);
+  }
+
+  .pswp__img {
+    opacity: 1;
+    filter: none;
+    animation: none;
+  }
+
+  img.lazyloaded {
+    opacity: 1;
+    animation: blur-darken 0.8s ease-in-out forwards !important;
+  }
+}
+
+// Fonts
+$font-basic: $custom-basic-families, $basic-families, $local-basic-families;
+$font-code: $custom-code-families, $code-families, $local-code-families;
+$font-size: 15px;
+$line-height: 1.72;
+$line-height-title: 1.2em;
+
+// Header
+$logo-size: 44px;
+$subtitle-size: 18px;
+$banner-height: 35vh;
+
+// Layout
+$article-padding: 20px;
+$mobile-nav-width: 280px;
+
+// Media queries
+$mq-mobile: "screen and (max-width: 479px)";
+$no-mobile: "screen and (min-width: 480px)";
+$mq-tablet: "screen and (min-width: 480px) and (max-width: 767px)";
+$mq-normal: "screen and (min-width: 768px)";
+$mg-normal: "screen and (max-width: 767px)";
+$mq-large: "screen and (min-width: 960px)";
+$mg-large: "screen and (max-width: 959px)";
+$mq-extra-large: "screen and (min-width: 1242px)";
+$mg-extra-large: "screen and (max-width: 1241px)";
+$post-radius: 10px;
+$tag-radius: 8px;
+
+/*
+ * Small visual overrides.
+ * These live in the theme variable partial, so no injector is needed.
+ */
+
+/* Stronger separation for the main cards/boxes */
+.post-wrap,
+.article-inner,
+.archives-outer-wrap,
+.sidebar-wrap,
+.widget-wrap {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.post-wrap:hover,
+.article-inner:hover,
+.archives-outer-wrap:hover,
+.widget-wrap:hover {
+  border-color: var(--red-2);
+}
+
+/* Make the main page headings a little larger */
+#header-title #logo {
+  font-size: 44px;
+}
+
+.archive-year {
+  font-size: 27px !important;
+}
+
+/* Slightly larger top navigation labels */
+.main-nav-link {
+  font-size: 15px !important;
+}
+
+/* Keep mobile headings under control */
+@media #{$mg-large} {
+  #header-title #logo {
+    font-size: 36px;
+  }
+}
+
+@media #{$mq-tablet}, #{$mq-mobile} {
+  #header-title #logo {
+    font-size: 30px;
+  }
+}
