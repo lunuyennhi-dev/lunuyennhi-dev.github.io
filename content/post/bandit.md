@@ -8,11 +8,10 @@ categories:
   - Learning
 cover: "/images/covers/bandit.webp"
 banner: "/images/covers/bandit.webp"
----
 <p align="center">
   <img src="/images/covers/bandit.webp" width="700">
 </p>
-
+---
 Here are my notes on solving 34 levels of the Bandit wargame. I've included the core command syntax used in each challenge and the recovered Passwords.
 
 *Initial connection:* `ssh bandit0@bandit.labs.overthewire.org -p 2220` (Password: `bandit0`) 
