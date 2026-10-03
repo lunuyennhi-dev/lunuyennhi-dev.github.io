@@ -1,12 +1,17 @@
 ---
 title: "OverTheWire: Bandit (Levels 0 - 34)"
 description: "My detailed notes, command syntax explanations, and Passwords for OverTheWire's Bandit wargame."
-date: 2026-10-03
+date: 2026-09-03
 tags:
   - Linux
 categories:
   - Learning
+cover: "/images/covers/bandit.png"
+banner: "/images/covers/bandit.png"
 ---
+<p align="center">
+  <img src="/images/covers/bandit.png" width="700">
+</p>
 
 Here are my notes on solving 34 levels of the Bandit wargame. I've included the core command syntax used in each challenge and the recovered Passwords.
 
