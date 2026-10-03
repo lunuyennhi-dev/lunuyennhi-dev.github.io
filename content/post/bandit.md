@@ -6,11 +6,11 @@ tags:
   - Linux
 categories:
   - Learning
-cover: "/images/covers/bandit.png"
-banner: "/images/covers/bandit.png"
+cover: "/images/covers/bandit.webp"
+banner: "/images/covers/bandit.webp"
 ---
 <p align="center">
-  <img src="/images/covers/bandit.png" width="700">
+  <img src="/images/covers/bandit.webp" width="700">
 </p>
 
 Here are my notes on solving 34 levels of the Bandit wargame. I've included the core command syntax used in each challenge and the recovered Passwords.
