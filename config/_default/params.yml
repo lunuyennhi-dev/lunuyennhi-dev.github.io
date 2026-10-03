@@ -655,7 +655,7 @@ injector:
   head_begin: 
   head_end: 
   body_begin:
-  body_end: '<script src="/js/magic-click.js"></script>'
+  body_end:
   sidebar_begin: # Inject code snippet right after <aside>
   sidebar_end: # Inject code snippet right before </aside>
 
