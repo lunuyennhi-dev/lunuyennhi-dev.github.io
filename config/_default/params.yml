@@ -220,8 +220,8 @@ reimu_cursor:
   enable: true
   cursor:
     default: ../images/default.png  # this path is relative to the css/main.css, so it needs to go up one level to reach the images folder
-    pointer: ../images/default.png
-    text: ../images/default.png
+    pointer: ../images/pointer.png
+    text: ../images/pointer.png
 
 icon_font: 4552607_ex15nbittbh
 
