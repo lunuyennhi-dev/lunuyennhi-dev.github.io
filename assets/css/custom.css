@@ -1,7 +1,9 @@
 /* ========================================
    LUN'S SECRET - MIDNIGHT GLASS
    ======================================== */
-
+body {
+    background: red !important;
+}
 :root {
   --lun-blue: #4779d1;
   --lun-blue-light: #91b7ff;
