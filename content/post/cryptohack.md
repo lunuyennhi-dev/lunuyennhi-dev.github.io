@@ -85,7 +85,6 @@ print(f"p = {p}")
 print(f"q = {q}")
 ```
 ## Adrien's Signs
-## Adrien's Signs
 
 ### 1. Challenge Source Code
 
