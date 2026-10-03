@@ -87,6 +87,28 @@ print(f"q = {q}")
 ## Adrien's Signs
 
 **1. Challenge & Vulnerability Analysis**
+> <span style="color: #ff9800;">**1. Mathematical Prerequisites**</span>
+> 
+> **Quadratic Residue (QR):**
+> For an odd prime $p$ and an integer $x$ where $\gcd(x, p) = 1$:
+> * $x$ is a quadratic residue modulo $p$ ($x \in \text{QR}_p$) if there exists an integer $y$ such that: $y^2 \equiv x \pmod p$.
+> * Otherwise, $x$ is a quadratic non-residue ($x \in \text{QNR}_p$).
+> 
+> **Legendre Symbol & Euler's Criterion:**
+> The Legendre symbol $\left(\frac{x}{p}\right)$ quickly determines if $x$ is a QR modulo $p$:
+> $$ > \left(\frac{x}{p}\right) \equiv x^{\frac{p-1}{2}} \equiv \begin{cases} 1 & \text{if } x \in \text{QR}_p \\ -1 & \text{if } x \in \text{QNR}_p \end{cases} \pmod p > $$
+> 
+> **Multiplicative Property:**
+> The Legendre symbol is multiplicative:
+> $$> \left(\frac{a \cdot b}{p}\right) = \left(\frac{a}{p}\right) \cdot \left(\frac{b}{p}\right) >$$
+> Specifically, when $p \equiv 3 \pmod 4$, $-1$ is always a quadratic non-residue: $\left(\frac{-1}{p}\right) = -1$.
+
+---
+
+
+
+
+
 
 The script converts the flag into a binary string and encrypts each bit $b$ using a random exponent $e$:
 * If $b = 1$, the ciphertext is $c \equiv a^e \pmod p$.
