@@ -13,7 +13,7 @@ categories:
 
 ## Modular Binomials
 
-### 1. Challenge Description
+**1. Challenge Description**
 
 Rearrange the following equations to recover the primes $p, q$:
 
@@ -21,7 +21,7 @@ $$\begin{aligned} N &= p \cdot q \\ c_1 &\equiv (2p + 3q)^{e_1} \pmod N \\ c_2 &
 
 The goal is to recover the factorization of $N$, i.e., $p$ and $q$.
 
-### 2. Analysis
+**2. Analysis**
 
 We have:
 
@@ -57,7 +57,7 @@ Since $q \mid D$ and $q \mid N$, we can recover $q$ and $p$ using:
 
 $$q = \gcd(D, N) \quad \Rightarrow \quad p = \frac{N}{q}$$
 
-### 3. Solution
+**3. Solution**
 
 ```python
 from math import gcd
@@ -71,10 +71,7 @@ c2 = 143869971386379788607482789869450986485071428645841111242025803651037931658
 q1 = pow(c1, e2, n)
 q2 = pow(c2, e1, n)
 
-d = (
-    pow(5, e1 * e2, n) * q1
-    - pow(2, e1 * e2, n) * q2
-)
+d = (pow(5, e1 * e2, n) * q1- pow(2, e1 * e2, n) * q2)
 
 q = gcd(d, n)
 p = n // q
