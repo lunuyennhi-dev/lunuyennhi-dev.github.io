@@ -2,8 +2,15 @@
 title: About me 
 description: 
 
-date: 2022-06-09T20:12:52+08:00
-lastmod: 2022-06-09T20:12:52+08:00
+date: 2026-10-03
+lastmod: 2026-10-03
 ---
 
-A Hakurei Reimu style Hugo theme. Migrated from [hexo-theme-reimu](https://github.com/D-Sketon/hexo-theme-reimu).
+## About Me
+
+Hi, I'm **LUN** 🌙
+
+A student at **VNUHCM-University of Information Technology (UIT)**,
+> **status:** healing.
+>
+> `18 · UIT · Information Security · CTF · somewhere between curiosity and chaos`
