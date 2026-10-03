@@ -1,29 +1,23 @@
 ---
-title: 友情链接
-description: 友情链接
-
+title: Friends
+description: Friends and their blogs
 date: 2022-06-09T20:12:52+08:00
 lastmod: 2022-06-09T20:12:52+08:00
 ---
 
-## 本站信息
+## My Blog
 
-- 站名： 拔剑Sketon
-- 站长： 拔剑Sketon
+- **Name:** LUN SECRET
+- **Owner:** LUN
 
-## 申请方法
+## Friend Links
 
-- 添加本站后，在本页留言，格式如下
+If you enjoy my blog, feel free to add it to your friend links.
+After adding it, you can leave a message here with your information:
 
-````yml
+````markdown
 ```yml
-- name: #您的名字
-  url: #您的网址
-  desc: #简短描述
-  image: #一张图片
-```
-````
-
-## 小伙伴们
-
-{{< friendsLink >}}
+- name: Your Name
+  url: https://your-blog.com/
+  desc: A short description
+  image: https://your-blog.com/avatar.png
