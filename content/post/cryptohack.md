@@ -14,8 +14,6 @@ categories:
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
 
-...
-
 ## Modular Binomials
 
 **1. Challenge Description**
