@@ -743,59 +743,87 @@ material_theme:
 
 internal_theme:
   light:
-    --red-0: '#101827'
-    --red-1: '#2f6fce'
-    --red-2: '#6fa8ff'
-    --red-3: '#9bc2ff'
-    --red-4: '#c8dcff'
-    --red-5: '#f7f9fd'
-    --red-5-5: '#edf3fb'
-    --red-6: '#d8e5f5'
-    --color-red-6-shadow: 'rgba(36, 74, 145, 0.24)'
-    --color-red-3-shadow: 'rgba(47, 111, 206, 0.20)'
-    --highlight-nav: 'rgba(248, 251, 255, 0.94)'
-    --highlight-scrollbar: '#6fa8ff'
-    --highlight-background: '#e9eef7'
-    --highlight-selection: '#6fa8ff44'
-    --highlight-foreground: '#101827'
-    --highlight-comment: '#68758a'
-    --highlight-red: '#c43d55'
-    --highlight-orange: '#c76b24'
-    --highlight-yellow: '#a77d16'
-    --highlight-green: '#287a58'
-    --highlight-aqua: '#187c91'
-    --highlight-blue: '#315eba'
-    --highlight-purple: '#7657b5'
-    --highlight-deletion: '#b83248'
-    --highlight-deletion-bg: '#fbe8ec'
-    --highlight-addition: '#287a58'
-    --highlight-addition-bg: '#e7f5ee'
+    # ==============================
+    # Light Theme
+    # ==============================
+
+    --red-0: '#172033'
+    --red-1: '#2563eb'
+    --red-2: '#3b82f6'
+    --red-3: '#60a5fa'
+    --red-4: '#bfdbfe'
+
+    # Main surfaces
+    --red-5: '#f1f5f9'
+    --red-5-5: '#e2e8f0'
+    --red-6: '#cbd5e1'
+
+    --color-red-6-shadow: '#94a3b8'
+    --color-red-3-shadow: '#bfdbfe'
+
+    # Navigation
+    --highlight-nav: '#ffffff'
+    --highlight-scrollbar: '#3b82f6'
+    --highlight-background: '#f8fafc'
+    --highlight-selection: '#bfdbfe'
+
+    # Code highlight
+    --highlight-foreground: '#172033'
+    --highlight-comment: '#64748b'
+    --highlight-red: '#dc2626'
+    --highlight-orange: '#ea580c'
+    --highlight-yellow: '#ca8a04'
+    --highlight-green: '#16a34a'
+    --highlight-aqua: '#0891b2'
+    --highlight-blue: '#2563eb'
+    --highlight-purple: '#9333ea'
+
+    --highlight-deletion: '#dc2626'
+    --highlight-deletion-bg: '#fee2e2'
+    --highlight-addition: '#16a34a'
+    --highlight-addition-bg: '#dcfce7'
+
 
   dark:
-    --red-0: '#f1f6ff'
-    --red-1: '#6fa8ff'
-    --red-2: '#91bbff'
-    --red-3: '#b8d1ff'
-    --red-4: '#40577f'
-    --red-5: '#151a23'
-    --red-5-5: '#1c2330'
-    --red-6: '#293447'
-    --color-red-6-shadow: 'rgba(0, 0, 0, 0.48)'
-    --color-red-3-shadow: 'rgba(82, 140, 230, 0.28)'
-    --highlight-nav: 'rgba(10, 14, 21, 0.96)'
-    --highlight-scrollbar: '#6fa8ff'
-    --highlight-background: '#0c1017'
-    --highlight-selection: '#6fa8ff44'
-    --highlight-foreground: '#eaf2ff'
-    --highlight-comment: '#9aaac4'
-    --highlight-red: '#ff7f8a'
-    --highlight-orange: '#ffb86b'
-    --highlight-yellow: '#e8cc70'
-    --highlight-green: '#75d7a4'
-    --highlight-aqua: '#70d7e5'
-    --highlight-blue: '#8bb3ff'
-    --highlight-purple: '#c4a5ff'
-    --highlight-deletion: '#ff8b96'
-    --highlight-deletion-bg: '#431d25'
-    --highlight-addition: '#75d7a4'
-    --highlight-addition-bg: '#163527'
+    # ==============================
+    # Dark Theme
+    # ==============================
+
+    --red-0: '#f1f5f9'
+    --red-1: '#60a5fa'
+    --red-2: '#93c5fd'
+    --red-3: '#bfdbfe'
+    --red-4: '#1e3a5f'
+
+    # Deep dark surfaces
+    # Dùng màu đặc để giảm repaint khi đổi theme
+    --red-5: '#111827'
+    --red-5-5: '#0f172a'
+    --red-6: '#1e293b'
+
+    --color-red-6-shadow: '#020617'
+    --color-red-3-shadow: '#1e40af'
+
+    # Navigation
+    --highlight-nav: '#0b1220'
+    --highlight-scrollbar: '#3b82f6'
+    --highlight-background: '#080d18'
+    --highlight-selection: '#1e3a5f'
+
+    # Text
+    --highlight-foreground: '#e2e8f0'
+    --highlight-comment: '#94a3b8'
+
+    # Code highlight
+    --highlight-red: '#ff7b72'
+    --highlight-orange: '#ffa657'
+    --highlight-yellow: '#e3b341'
+    --highlight-green: '#7ee787'
+    --highlight-aqua: '#56d4dd'
+    --highlight-blue: '#79c0ff'
+    --highlight-purple: '#d2a8ff'
+
+    --highlight-deletion: '#ff7b72'
+    --highlight-deletion-bg: '#3b1115'
+    --highlight-addition: '#7ee787'
+    --highlight-addition-bg: '#102a1a'
