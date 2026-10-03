@@ -3,6 +3,8 @@ title: CRYPTOHACK
 description: CryptoHack write-ups and notes
 date: 2026-10-03
 lastmod: 2026-10-03
+cover: "/images/covers/cryptohack.webp"
+banner: "/images/covers/cryptohack.webp"
 math: true
 tags:
   - CryptoHack
