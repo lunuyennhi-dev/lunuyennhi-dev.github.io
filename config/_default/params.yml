@@ -581,9 +581,9 @@ top:
   enable: true
   position: right # left or right
   icon:
-    url: "../images/default.png" # this path is relative to the css/main.css, so it needs to go up one level to reach the images folder
-    rotate: true
-    mask: true # whether to use the images as a mask
+    url: "/images/back-to-top.png"
+    rotate: false
+    mask: false # show the image's original colors
 
 # whether to display the notification when the article is outdated
 outdate:
@@ -742,106 +742,60 @@ material_theme:
   enable: false
 
 internal_theme:
-
-  ######################################
-  # LIGHT MODE
-  ######################################
   light:
-
-    # Primary palette
     --red-0: '#101827'
-    --red-1: '#244A91'
-    --red-2: '#4779D1'
-    --red-3: '#8FAFEA'
-    --red-4: '#C8D8F4'
-
-    # Glass surfaces
-    --red-5: 'rgba(235, 242, 253, 0.80)'
-    --red-5-5: 'rgba(211, 225, 247, 0.68)'
-    --red-6: 'rgba(171, 197, 235, 0.42)'
-
-    # Stronger shadows
-    --color-red-6-shadow: 'rgba(17, 38, 75, 0.32)'
-    --color-red-3-shadow: 'rgba(36, 74, 145, 0.24)'
-
-    # Navigation
-    --highlight-nav: 'rgba(242, 247, 255, 0.88)'
-
-    --highlight-scrollbar: '#4779D1'
-
-    # Main background
-    --highlight-background: 'rgba(245, 248, 253, 0.92)'
-
-    # Selection
-    --highlight-selection: '#4779D155'
-
-    # Text
+    --red-1: '#2f6fce'
+    --red-2: '#6fa8ff'
+    --red-3: '#9bc2ff'
+    --red-4: '#c8dcff'
+    --red-5: '#f7f9fd'
+    --red-5-5: '#edf3fb'
+    --red-6: '#d8e5f5'
+    --color-red-6-shadow: 'rgba(36, 74, 145, 0.24)'
+    --color-red-3-shadow: 'rgba(47, 111, 206, 0.20)'
+    --highlight-nav: 'rgba(248, 251, 255, 0.94)'
+    --highlight-scrollbar: '#6fa8ff'
+    --highlight-background: '#e9eef7'
+    --highlight-selection: '#6fa8ff44'
     --highlight-foreground: '#101827'
-    --highlight-comment: '#5D6B82'
+    --highlight-comment: '#68758a'
+    --highlight-red: '#c43d55'
+    --highlight-orange: '#c76b24'
+    --highlight-yellow: '#a77d16'
+    --highlight-green: '#287a58'
+    --highlight-aqua: '#187c91'
+    --highlight-blue: '#315eba'
+    --highlight-purple: '#7657b5'
+    --highlight-deletion: '#b83248'
+    --highlight-deletion-bg: '#fbe8ec'
+    --highlight-addition: '#287a58'
+    --highlight-addition-bg: '#e7f5ee'
 
-    # Syntax
-    --highlight-red: '#C43D55'
-    --highlight-orange: '#C76B24'
-    --highlight-yellow: '#A77D16'
-    --highlight-green: '#287A58'
-    --highlight-aqua: '#187C91'
-    --highlight-blue: '#315EBA'
-    --highlight-purple: '#7657B5'
-
-    --highlight-deletion: '#B83248'
-    --highlight-deletion-bg: '#FBE8EC'
-
-    --highlight-addition: '#287A58'
-    --highlight-addition-bg: '#E7F5EE'
-
-
-  ######################################
-  # DARK MODE
-  ######################################
   dark:
-
-    # Primary palette
-    --red-0: '#F4F7FF'
-    --red-1: '#75A4FF'
-    --red-2: '#91B7FF'
-    --red-3: '#B6CAFF'
-    --red-4: '#40577F'
-
-    # Deep layered surfaces
-    --red-5: 'rgba(13, 22, 38, 0.80)'
-    --red-5-5: 'rgba(20, 32, 53, 0.72)'
-    --red-6: 'rgba(42, 61, 91, 0.48)'
-
-    # Shadows
-    --color-red-6-shadow: 'rgba(0, 0, 0, 0.55)'
-    --color-red-3-shadow: 'rgba(79, 126, 224, 0.30)'
-
-    # Navigation
-    --highlight-nav: 'rgba(8, 14, 25, 0.88)'
-
-    --highlight-scrollbar: '#75A4FF'
-
-    # Main background
-    --highlight-background: 'rgba(7, 13, 24, 0.92)'
-
-    # Selection
-    --highlight-selection: '#75A4FF55'
-
-    # Text
-    --highlight-foreground: '#EAF1FF'
-    --highlight-comment: '#9AAAC4'
-
-    # Syntax
-    --highlight-red: '#FF7F8A'
-    --highlight-orange: '#FFB86B'
-    --highlight-yellow: '#E8CC70'
-    --highlight-green: '#75D7A4'
-    --highlight-aqua: '#70D7E5'
-    --highlight-blue: '#8BB3FF'
-    --highlight-purple: '#C4A5FF'
-
-    --highlight-deletion: '#FF8B96'
-    --highlight-deletion-bg: '#431D25'
-
-    --highlight-addition: '#75D7A4'
+    --red-0: '#f1f6ff'
+    --red-1: '#6fa8ff'
+    --red-2: '#91bbff'
+    --red-3: '#b8d1ff'
+    --red-4: '#40577f'
+    --red-5: '#151a23'
+    --red-5-5: '#1c2330'
+    --red-6: '#293447'
+    --color-red-6-shadow: 'rgba(0, 0, 0, 0.48)'
+    --color-red-3-shadow: 'rgba(82, 140, 230, 0.28)'
+    --highlight-nav: 'rgba(10, 14, 21, 0.96)'
+    --highlight-scrollbar: '#6fa8ff'
+    --highlight-background: '#0c1017'
+    --highlight-selection: '#6fa8ff44'
+    --highlight-foreground: '#eaf2ff'
+    --highlight-comment: '#9aaac4'
+    --highlight-red: '#ff7f8a'
+    --highlight-orange: '#ffb86b'
+    --highlight-yellow: '#e8cc70'
+    --highlight-green: '#75d7a4'
+    --highlight-aqua: '#70d7e5'
+    --highlight-blue: '#8bb3ff'
+    --highlight-purple: '#c4a5ff'
+    --highlight-deletion: '#ff8b96'
+    --highlight-deletion-bg: '#431d25'
+    --highlight-addition: '#75d7a4'
     --highlight-addition-bg: '#163527'
