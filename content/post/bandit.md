@@ -3,16 +3,15 @@ title: "OverTheWire: Bandit (Levels 0 - 34)"
 description: "My detailed notes, command syntax explanations, and flags for OverTheWire's Bandit wargame."
 date: 2026-10-03
 tags:
-  - OverTheWire
   - Linux
-  - Wargames
 categories:
-  - Write-ups
+  - Learning
+![Bandit](/data/covers)
 ---
 
 Here are my notes on solving the first 19 levels of the Bandit wargame. I've included the core command syntax used in each challenge and the recovered flags.
 
-*Initial connection:* `ssh bandit0@bandit.labs.overthewire.org -p 2220` (Password: `bandit0`
+*Initial connection:* `ssh bandit0@bandit.labs.overthewire.org -p 2220` (Password: `bandit0`)
 
 ---
 
