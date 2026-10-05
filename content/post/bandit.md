@@ -1,7 +1,7 @@
 ---
 title: "OverTheWire: Bandit (Levels 0 - 34)"
 description: "My detailed notes, command syntax explanations, and Passwords for OverTheWire's Bandit wargame."
-draft=true
+draft: true
 date: 2026-09-03
 tags:
   - Linux
