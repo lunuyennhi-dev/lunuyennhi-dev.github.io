@@ -661,7 +661,7 @@ injector:
 
 # Experimental, may have a lot of bugs, open with caution!
 pjax:
-  enable: false
+  enable: true
 
 # Experimental
 # https://github.com/GoogleChromeLabs/quicklink
@@ -682,8 +682,8 @@ service_worker:
 
 # Experimental
 live2d:
-  enable: false
-  position: left # left or right
+  enable: true
+  position: right # left or right
 
 # Experimental
 live2d_widgets:
@@ -732,8 +732,6 @@ player:
       server: netease
       type: playlist
       auto:
-pjax:
-  enable: true
 ########################################
 # pangu.js
 ########################################
