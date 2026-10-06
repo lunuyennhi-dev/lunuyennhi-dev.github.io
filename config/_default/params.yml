@@ -711,9 +711,9 @@ player:
           artist: "Gibran Alcocer, Anya Nami"
           url: "/music/Idea22AnyaNamiRemix.mp3"
           cover: "/music/cover.png"
-        - name: "Where the Blue-Moon Weed Grows"
+        - name: "For 1000 Years"
           artist: "Evan Call"
-          url: "/music/WheretheBlue.mp3"
+          url: "/music/For 1000 Years.mp3"
           cover: "/music/cover.png"
       fixed: false
       autoplay: true
