@@ -698,32 +698,91 @@ pace:
 # Please turn on pjax to use this feature
 player:
   disable_on_mobile: false
-  position: before_sidebar # before_sidebar | after_sidebar | after_widget
-  # Frieren music player
-  # APlayer + Meting, using Evan Call as the initial music search source.
+  position: before_sidebar
   aplayer:
-    # https://github.com/DIYgod/APlayer
     enable: true
     options:
-      audio: [] # overwritten by Meting
+      audio:
+        - name: "Journey of a Lifetime ~ Frieren Main Theme"
+          artist: "Evan Call"
+          url: "/music/frieren/journey-of-a-lifetime.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "The End of One Journey"
+          artist: "Evan Call"
+          url: "/music/frieren/the-end-of-one-journey.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "A Well-Earned Celebration"
+          artist: "Evan Call"
+          url: "/music/frieren/a-well-earned-celebration.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "One Last Adventure"
+          artist: "Evan Call"
+          url: "/music/frieren/one-last-adventure.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Farewell, My Friend"
+          artist: "Evan Call"
+          url: "/music/frieren/farewell-my-friend.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Departures"
+          artist: "Evan Call"
+          url: "/music/frieren/departures.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Time Flows Ever Onward"
+          artist: "Evan Call"
+          url: "/music/frieren/time-flows-ever-onward.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "The Precious Moments We Share"
+          artist: "Evan Call"
+          url: "/music/frieren/the-precious-moments-we-share.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Life Is Worth Living"
+          artist: "Evan Call"
+          url: "/music/frieren/life-is-worth-living.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Before the Light Fades"
+          artist: "Evan Call"
+          url: "/music/frieren/before-the-light-fades.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Where the Blue-Moon Weed Grows"
+          artist: "Evan Call"
+          url: "/music/frieren/where-the-blue-moon-weed-grows.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Great Mage Flamme"
+          artist: "Evan Call"
+          url: "/music/frieren/great-mage-flamme.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Fear Brought Me This Far"
+          artist: "Evan Call"
+          url: "/music/frieren/fear-brought-me-this-far.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Memories for My Master"
+          artist: "Evan Call"
+          url: "/music/frieren/memories-for-my-master.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "To Travel for Aureole"
+          artist: "Evan Call"
+          url: "/music/frieren/to-travel-for-aureole.mp3"
+          cover: "/images/covers/frieren.webp"
+        - name: "Beyond the Journey's End"
+          artist: "Evan Call"
+          url: "/music/frieren/beyond-the-journeys-end.mp3"
+          cover: "/images/covers/frieren.webp"
       fixed: false
       autoplay: false
-      loop: all
-      order: list
-      preload: auto
+      loop: "all"
+      order: "list"
+      preload: "auto"
       volume: 0.7
       mutex: true
       listFolded: false
       lrcType: 0
   meting:
-    # https://github.com/metowolf/MetingJS
-    enable: true
-    # Current public Meting-compatible API
-    meting_api: https://meting.mikus.ink/api?server=:server&type=:type&id=:id&r=:r
+    enable: false
+    meting_api:
     options:
-      id: Evan Call
+      id:
       server: netease
-      type: search
+      type: playlist
       auto:
 
 ########################################
