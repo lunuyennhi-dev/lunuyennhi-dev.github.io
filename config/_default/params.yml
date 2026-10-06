@@ -661,7 +661,7 @@ injector:
 
 # Experimental, may have a lot of bugs, open with caution!
 pjax:
-  enable: false
+  enable: true
 
 # Experimental
 # https://github.com/GoogleChromeLabs/quicklink
@@ -683,12 +683,12 @@ service_worker:
 # Experimental
 live2d:
   enable: false
-  position: left # left or right
+  position: right # left or right
 
 # Experimental
 live2d_widgets:
-  enable: false
-  position: left # left or right
+  enable: true
+  position: right # left or right
 
 # https://github.com/CodeByZach/pace
 pace:
@@ -713,9 +713,9 @@ player:
           cover: "/music/cover.png"
         - name: "Where the Blue-Moon Weed Grows"
           artist: "Evan Call"
-          url: "/music/WheretheBlue-MoonWeedGrows.mp3"
+          url: "/music/WheretheBlue.mp3"
           cover: "/music/cover.png"
-      fixed: false
+      fixed: true
       autoplay: true
       loop: "all"
       order: "list"
@@ -732,7 +732,6 @@ player:
       server: netease
       type: playlist
       auto:
-
 ########################################
 # pangu.js
 ########################################
