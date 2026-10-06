@@ -687,7 +687,7 @@ live2d:
 
 # Experimental
 live2d_widgets:
-  enable: true
+  enable: false
   position: right # left or right
 
 # https://github.com/CodeByZach/pace
@@ -715,7 +715,7 @@ player:
           artist: "Evan Call"
           url: "/music/WheretheBlue.mp3"
           cover: "/music/cover.png"
-      fixed: true
+      fixed: false
       autoplay: true
       loop: "all"
       order: "list"
