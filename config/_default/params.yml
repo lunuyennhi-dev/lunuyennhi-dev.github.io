@@ -713,7 +713,7 @@ player:
           cover: "/music/cover.png"
         - name: "Where the Blue-Moon Weed Grows"
           artist: "Evan Call"
-          url: "/music/WheretheBlue-MoonWeedGrows.mp3"
+          url: "/music/WheretheBlue.mp3"
           cover: "/music/cover.png"
       fixed: false
       autoplay: true
@@ -732,7 +732,8 @@ player:
       server: netease
       type: playlist
       auto:
-
+pjax:
+  enable: true
 ########################################
 # pangu.js
 ########################################
