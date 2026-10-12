@@ -127,7 +127,7 @@ Ta áp dụng phương pháp **Håstad's Broadcast Attack**:
 > Then the moduli pair $(N_i, N_j)$ is vulnerable to a Common Factor Attack.
 >
 > We can now write:
-> $$ \begin{aligned}   M^3 &\equiv C_1 \pmod{N_1} \\   M^3 &\equiv C_2 \pmod{N_2} \\   M^3 &\equiv C_3 \pmod{N_3}   \end{aligned} >$$
+> $$ \begin{aligned}   M^3 &\equiv C_1 \pmod{N_1} \\   M^3 &\equiv C_2 \pmod{N_2} \\   M^3 &\equiv C_3 \pmod{N_3}   \end{aligned} $$
 >
 > Thus we can get the following by solving using the Chinese Remainder Theorem:
  $$  M^3 = \sum_{i=1}^3 C_i b_i b'_i \pmod N  $$
