@@ -1,6 +1,6 @@
 ---
 title: WannaWin Training - Cryptography
-description: 
+description: ESB and RSA
 date: 2026-10-12
 lastmod: 2026-10-12
 cover: "/images/covers/cryptohack.webp"
@@ -43,18 +43,18 @@ Output:
 # ct: a58fd383d77105ed4cec2ff0eb3e483dea0d8bf2d963ce6e61a7c875a8b4edea
 ```
 ### 2. Phân tích bài
-Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm secrets.randbelow(1_000_001) 
-Ta cần giải mã ciphertext nhiều lần với key tạo ngẫu nhiên đến khi thu được flag có dạng **W1{}**
+Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm **secrets.randbelow(1_000_001)**
+Ta cần giải mã **ciphertext** nhiều lần với key tạo ngẫu nhiên đến khi thu được flag có dạng **W1{}**
 Flag được mã hóa như sau:
 ```python
 ct = AES.new(key, AES.MODE_ECB).encrypt(FLAG)
 ```
-Để mã hóa ct với key là key ta dùng:
+Để mã hóa ct với khóa là **key** ta dùng:
 ``` python
 decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
 ```
-Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** có dạng **W1** là xong.
-## 3. Script
+Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** có dạng **W1{** là xong.
+### 3. Script
 ```python
 import secrets
 from Crypto.Cipher import AES
