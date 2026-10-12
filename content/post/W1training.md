@@ -3,8 +3,8 @@ title: WannaWin Training - Cryptography
 description: ESB and RSA
 date: 2026-10-12
 lastmod: 2026-10-12
-cover: "/images/covers/cryptohack.webp"
-banner: "/images/covers/cryptohack.webp"
+cover: "/images/covers/w1training.webp"
+banner: "/images/covers/w1training.webp"
 math: true
 tags:
   - Cryptography
