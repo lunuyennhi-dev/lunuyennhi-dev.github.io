@@ -100,9 +100,7 @@ for m in messages:
     print(f"c = {c}")
 ```
 output:
-```text
-
-```
+[`output.txt`](/files/output_0ef6d6343784e59e2f44f61d2d29896f.txt)
 ### 2. Phân tích đề bài 
 Ta chú ý điểm đặc biệt của bài này là số mũ $e = 3$ rất nhỏ. Nếu $m^3 < n$, ta có thể khôi phục $m$ bằng cách lấy trực tiếp căn bậc 3 của $c$:
 
