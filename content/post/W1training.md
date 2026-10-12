@@ -121,18 +121,18 @@ Ta áp dụng phương pháp **Håstad's Broadcast Attack**:
 >
 > Suppose Alice sends an unpadded message $M$ to $k$ people $P_1, P_2, \dots, P_k$ each using the same small public key exponent $e$ and different moduli $N_i$ for the $i$-th individual, with the public key $(N_i, e)$. The attack states that as soon as $k \ge e$, the message $M$ is no longer secure and we can recover it easily using the Chinese Remainder Theorem (CRT).
 >
-> Let us understand this attack using an example: Alice sends a message $M$ to 3 different people using the same public key exponent $e = 3$. Let the ciphertext received by the $i$-th receiver be $C_i$ where $C_i \equiv M^3 \pmod{N_i}$[cite: 2]. We assume that $\gcd(N_i, N_j) = 1$ where $i \neq j$.
+> Let us understand this attack using an example: Alice sends a message $M$ to 3 different people using the same public key exponent $e = 3$. Let the ciphertext received by the $i$-th receiver be $C_i$ where $C_i \equiv M^3 \pmod{N_i}$. We assume that $\gcd(N_i, N_j) = 1$ where $i \neq j$.
 >
 > *Quick Question: What if $\gcd(N_i, N_j) \neq 1$?*  
 > Then the moduli pair $(N_i, N_j)$ is vulnerable to a Common Factor Attack.
 >
 > We can now write:
-> $$> \begin{aligned}  > M^3 &\equiv C_1 \pmod{N_1} \\  > M^3 &\equiv C_2 \pmod{N_2} \\  > M^3 &\equiv C_3 \pmod{N_3}  > \end{aligned} >$$[cite: 2]
+> $$> \begin{aligned}  > M^3 &\equiv C_1 \pmod{N_1} \\  > M^3 &\equiv C_2 \pmod{N_2} \\  > M^3 &\equiv C_3 \pmod{N_3}  > \end{aligned} >$$
 >
 > Thus we can get the following by solving using the Chinese Remainder Theorem:
-> $$ > M^3 = \sum_{i=1}^3 C_i b_i b'_i \pmod N > $$[cite: 2]
+> $$ > M^3 = \sum_{i=1}^3 C_i b_i b'_i \pmod N > $$
 >
-> where $b_i = \frac{N}{N_i}$, $b'_i \equiv b_i^{-1} \pmod{N_i}$ and $N = N_1 \cdot N_2 \cdot N_3$[cite: 2]. Since we know that $M < N_i$ for all $i \in \{1, 2, 3\}$, it follows that $M^3 < N_1 N_2 N_3 = N$.  
+> where $b_i = \frac{N}{N_i}$, $b'_i \equiv b_i^{-1} \pmod{N_i}$ and $N = N_1 \cdot N_2 \cdot N_3$. Since we know that $M < N_i$ for all $i \in \{1, 2, 3\}$, it follows that $M^3 < N_1 N_2 N_3 = N$.  
 > Because $M^3 < N$, the modulo operation is eliminated on the integers:
 > $$> M^3 \pmod N = M^3 >$$
 > We can easily calculate $M$ now by directly taking the integer cube root of $M^3$.
@@ -142,7 +142,7 @@ Với cùng một message được mã hóa RSA nhiều lần bằng các bộ $
 $$\begin{aligned}  m^3 &\equiv c_1 \pmod{n_1} \\  m^3 &\equiv c_2 \pmod{n_2} \\  m^3 &\equiv c_3 \pmod{n_3}  \end{aligned}$$
 
 
-Dùng Định lý thặng dư Trung Hoa (CRT), ta tìm được giá trị $m^3$[cite: 2]:
+Dùng Định lý thặng dư Trung Hoa (CRT), ta tìm được giá trị $m^3$:
 
 $$m^3 = \sum_{i=1}^3 c_i b_i b'_i \pmod N$$
 
