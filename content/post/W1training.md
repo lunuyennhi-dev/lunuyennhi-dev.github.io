@@ -43,7 +43,8 @@ Output:
 # ct: a58fd383d77105ed4cec2ff0eb3e483dea0d8bf2d963ce6e61a7c875a8b4edea
 ```
 ### 2. Phân tích bài
-Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm **secrets.randbelow(1_000_001)**
+Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm **secrets.randbelow(1_000_001)**  
+
 Ta cần giải mã **ciphertext** nhiều lần với key tạo ngẫu nhiên đến khi thu được flag có dạng **W1{}**
 Flag được mã hóa như sau:
 ```python
@@ -115,7 +116,7 @@ Tất cả kết quả trả về đều có cờ `False` (dạng `(k, False)`),
 
 Ta áp dụng phương pháp **Håstad's Broadcast Attack**:
 
-> **Håstad's Broadcast Attack**
+>  [**Håstad's Broadcast Attack**](https://github.com/ashutosh1206/Crypton/blob/master/RSA-encryption/Attack-Hastad-Broadcast/README.md)
 >
 > Suppose Alice sends an unpadded message $M$ to $k$ people $P_1, P_2, \dots, P_k$ each using the same small public key exponent $e$ and different moduli $N_i$ for the $i$-th individual, with the public key $(N_i, e)$. The attack states that as soon as $k \ge e$, the message $M$ is no longer secure and we can recover it easily using the Chinese Remainder Theorem (CRT).
 >
