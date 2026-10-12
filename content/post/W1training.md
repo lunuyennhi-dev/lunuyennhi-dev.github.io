@@ -127,10 +127,10 @@ Ta áp dụng phương pháp **Håstad's Broadcast Attack**:
 > Then the moduli pair $(N_i, N_j)$ is vulnerable to a Common Factor Attack.
 >
 > We can now write:
-> $$> \begin{aligned}  > M^3 &\equiv C_1 \pmod{N_1} \\  > M^3 &\equiv C_2 \pmod{N_2} \\  > M^3 &\equiv C_3 \pmod{N_3}  > \end{aligned} >$$
+> $$> \begin{aligned}   M^3 &\equiv C_1 \pmod{N_1} \\   M^3 &\equiv C_2 \pmod{N_2} \\   M^3 &\equiv C_3 \pmod{N_3}  > \end{aligned} >$$
 >
 > Thus we can get the following by solving using the Chinese Remainder Theorem:
-> $$ > M^3 = \sum_{i=1}^3 C_i b_i b'_i \pmod N > $$
+ $$ > M^3 = \sum_{i=1}^3 C_i b_i b'_i \pmod N > $$
 >
 > where $b_i = \frac{N}{N_i}$, $b'_i \equiv b_i^{-1} \pmod{N_i}$ and $N = N_1 \cdot N_2 \cdot N_3$. Since we know that $M < N_i$ for all $i \in \{1, 2, 3\}$, it follows that $M^3 < N_1 N_2 N_3 = N$.  
 > Because $M^3 < N$, the modulo operation is eliminated on the integers:
