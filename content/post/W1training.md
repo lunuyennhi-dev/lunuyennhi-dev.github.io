@@ -1,16 +1,18 @@
 ---
-title: WannaW1n Training: Cryptography
+title: WannaWin Training - Cryptography
 description: 
 date: 2026-10-12
 lastmod: 2026-10-12
+cover: "/images/covers/cryptohack.webp"
+banner: "/images/covers/cryptohack.webp"
 math: true
 tags:
   - Cryptography
 categories:
   - Learning 
 ---
-##ECB 
-###1. SOURCE CODE:
+## ECB
+### 1. Source code
 ```python
 # Install dependencies: pip install pycryptodome
 # Hint: https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_codebook_(ECB)
@@ -40,4 +42,32 @@ Output:
 ```text
 # ct: a58fd383d77105ed4cec2ff0eb3e483dea0d8bf2d963ce6e61a7c875a8b4edea
 ```
+### 2. Phân tích bài
+Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm secrets.randbelow(1_000_001) 
+Ta cần giải mã ciphertext nhiều lần với key tạo ngẫu nhiên đến khi thu được flag có dạng **W1{}**
+Flag được mã hóa như sau:
+```python
+ct = AES.new(key, AES.MODE_ECB).encrypt(FLAG)
+```
+Để mã hóa ct với key là key ta dùng:
+``` python
+decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
+```
+Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** có dạng **W1** là xong.
+## 3. Script
+```python
+import secrets
+from Crypto.Cipher import AES
+ciphertext = bytes.fromhex('a58fd383d77105ed4cec2ff0eb3e483dea0d8bf2d963ce6e61a7c875a8b4edea')
+flag=True
+while flag:
+    key_int = secrets.randbelow(1_000_001) 
+    key = key_int.to_bytes(16, "big")
+    decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
+    if b'W1{' in decrypted:
+        print("plaintext", decrypted)
+        print("password_hash", key.hex())
+        flag=False
+```
+
 
