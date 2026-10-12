@@ -53,7 +53,7 @@ ct = AES.new(key, AES.MODE_ECB).encrypt(FLAG)
 ``` python
 decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
 ```
-Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** có dạng **W1{** là xong.
+Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** bắt đầu với **W1{** là xong.
 ### 3. Script
 ```python
 import secrets
