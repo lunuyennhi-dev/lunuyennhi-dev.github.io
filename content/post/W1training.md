@@ -64,10 +64,15 @@ while flag:
     key_int = secrets.randbelow(1_000_001) 
     key = key_int.to_bytes(16, "big")
     decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
-    if b'W1{' in decrypted:
+    if decrypted.startswith(b'W1{'):
         print("plaintext", decrypted)
         print("password_hash", key.hex())
         flag=False
+```
+Output:
+```text
+plaintext b'W1{AES_1z_s0_3z_3z_3z_r1ght????}'
+password_hash 000000000000000000000000000dc927
 ```
 
 
