@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21'
+lastmod: '2026-10-21 10:14:11'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -24,97 +24,18 @@ We've provided the key expansion code, and ciphertext that's been properly encry
 ### 2. Phân tích 
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
 
-We have:
-
-$$\begin{cases}
-c_1 \equiv (2p + 3q)^{e_1} \pmod N \\
-c_2 \equiv (5p + 7q)^{e_2} \pmod N
-\end{cases}$$
-
-Raise the first equation to $e_2$ and the second to $e_1$:
-
-$$\begin{cases}
-c_1^{e_2} \equiv (2p + 3q)^{e_1e_2} \pmod N \\
-c_2^{e_1} \equiv (5p + 7q)^{e_1e_2} \pmod N
-\end{cases}$$
-
 ### 3. Script
 
 ```python
 N_ROUNDS = 10
 
-key        = b'\xc3,\\\xa6\xb5\x80^\x0c\xdb\x8d\xa5z*\xb6\xfe\\'
+key = b'\xc3,\\\xa6\xb5\x80^\x0c\xdb\x8d\xa5z*\xb6\xfe\\'
 ciphertext = b'\xd1O\x14j\xa4+O\xb6\xa1\xc4\x08B)\x8f\x12\xdd'
 
-
-
-def expand_key(master_key):
-    """
-    Expands and returns a list of key matrices for the given master_key.
-    """
-
-    # Round constants https://en.wikipedia.org/wiki/AES_key_schedule#Round_constants
-    r_con = (
-        0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
-        0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
-        0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
-        0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
-    )
-
-    # Initialize round keys with raw key material.
-    key_columns = bytes2matrix(master_key)
-    iteration_size = len(master_key) // 4
-
-    # Each iteration has exactly as many columns as the key material.
-    i = 1
-    while len(key_columns) < (N_ROUNDS + 1) * 4:
-        # Copy previous word.
-        word = list(key_columns[-1])
-
-        # Perform schedule_core once every "row".
-        if len(key_columns) % iteration_size == 0:
-            # Circular shift.
-            word.append(word.pop(0))
-            # Map to S-BOX.
-            word = [s_box[b] for b in word]
-            # XOR with first byte of R-CON, since the others bytes of R-CON are 0.
-            word[0] ^= r_con[i]
-            i += 1
-        elif len(master_key) == 32 and len(key_columns) % iteration_size == 4:
-            # Run word through S-box in the fourth iteration when using a
-            # 256-bit key.
-            word = [s_box[b] for b in word]
-
-        # XOR with equivalent word from previous iteration.
-        word = bytes(i^j for i, j in zip(word, key_columns[-iteration_size]))
-        key_columns.append(word)
-
-    # Group key words in 4x4 byte matrices.
-    return [key_columns[4*i : 4*(i+1)] for i in range(len(key_columns) // 4)]
-
-def bytes2matrix(text):
-    """ Converts a 16-byte array into a 4x4 matrix.  """
-    return [list(text[i:i+4]) for i in range(0, len(text), 4)]
-
-def matrix2bytes(matrix):
-    """ Converts a 4x4 matrix into a 16-byte array.  """
-    t = []
-
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            t.append(matrix[i][j])
-
-    return t
-
-def add_round_key(s, k):
-    """
-    s: state, k: round_key
-    """
-    for i in range(len(s)):
-        for j in range(len(k[0])):
-            s[i][j] ^= k[i][j]
-
-s_box = (
+# -----------------------------------------------------------------------------
+# Look-up Tables (S-Box, Inverse S-Box, Round Constants)
+# -----------------------------------------------------------------------------
+S_BOX = (
     0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
     0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
     0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15,
@@ -133,7 +54,7 @@ s_box = (
     0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16,
 )
 
-inv_s_box = (
+INV_S_BOX = (
     0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB,
     0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
     0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E,
@@ -152,87 +73,125 @@ inv_s_box = (
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
 )
 
-def sub_bytes(s, sbox=s_box):
-    return [sbox[k] for k in sum(s, [])]
+R_CON = (
+    0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
+    0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
+    0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
+    0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
+)
 
-def inv_sub_bytes(s, sbox=inv_s_box):
-    for i in range(len(s)):
-        for j in range(len(s[0])):
-            s[i][j] = sbox[s[i][j]]
+# -----------------------------------------------------------------------------
+# Helper & Conversion Functions
+# -----------------------------------------------------------------------------
+def bytes2matrix(text):
+    """Chuyển mảng 16-byte thành ma trận 4x4."""
+    return [list(text[i:i+4]) for i in range(0, len(text), 4)]
 
-def shift_rows(s):
-    s[0][1], s[1][1], s[2][1], s[3][1] = s[1][1], s[2][1], s[3][1], s[0][1]
-    s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
-    s[0][3], s[1][3], s[2][3], s[3][3] = s[3][3], s[0][3], s[1][3], s[2][3]
+def matrix2bytes(matrix):
+    """Chuyển ma trận 4x4 thành mảng 16-byte."""
+    return bytes(sum(matrix, []))
 
+def xtime(a):
+    """Nhân một byte với 2 trong trường Galois GF(2^8)."""
+    return (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
+
+# -----------------------------------------------------------------------------
+# AES Transformations
+# -----------------------------------------------------------------------------
+def add_round_key(s, k):
+    """Cộng (XOR) ma trận trạng thái với Round Key."""
+    for row in range(4):
+        for col in range(4):
+            s[row][col] ^= k[row][col]
+    return s
+
+def inv_sub_bytes(s):
+    """Thực hiện biến đổi Inverse SubBytes trực tiếp trên ma trận trạng thái."""
+    for row in range(4):
+        for col in range(4):
+            s[row][col] = INV_S_BOX[s[row][col]]
+    return s
 
 def inv_shift_rows(s):
-    s[1][1], s[2][1], s[3][1], s[0][1] = s[0][1], s[1][1], s[2][1], s[3][1]
-    s[2][2], s[3][2], s[0][2], s[1][2] = s[0][2], s[1][2], s[2][2], s[3][2]
-    s[3][3], s[0][3], s[1][3], s[2][3] = s[0][3], s[1][3], s[2][3], s[3][3]
-
-
-# learned from http://cs.ucsb.edu/~koc/cs178/projects/JT/aes.c
-xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
-
-
-def mix_single_column(a):
-    # see Sec 4.1.2 in The Design of Rijndael
-    t = a[0] ^ a[1] ^ a[2] ^ a[3]
-    u = a[0]
-    a[0] ^= t ^ xtime(a[0] ^ a[1])
-    a[1] ^= t ^ xtime(a[1] ^ a[2])
-    a[2] ^= t ^ xtime(a[2] ^ a[3])
-    a[3] ^= t ^ xtime(a[3] ^ u)
-
+    """Dịch chuyển vòng các cột (ShiftRows ngược)."""
+    s[0][1], s[1][1], s[2][1], s[3][1] = s[3][1], s[0][1], s[1][1], s[2][1]
+    s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+    s[0][3], s[1][3], s[2][3], s[3][3] = s[1][3], s[2][3], s[3][3], s[0][3]
+    return s
 
 def mix_columns(s):
-    for i in range(4):
-        mix_single_column(s[i])
-
+    """MixColumns tiêu chuẩn."""
+    for col in range(4):
+        a = s[col]
+        t = a[0] ^ a[1] ^ a[2] ^ a[3]
+        u = a[0]
+        a[0] ^= t ^ xtime(a[0] ^ a[1])
+        a[1] ^= t ^ xtime(a[1] ^ a[2])
+        a[2] ^= t ^ xtime(a[2] ^ a[3])
+        a[3] ^= t ^ xtime(a[3] ^ u)
+    return s
 
 def inv_mix_columns(s):
-    # see Sec 4.1.3 in The Design of Rijndael
-    for i in range(4):
-        u = xtime(xtime(s[i][0] ^ s[i][2]))
-        v = xtime(xtime(s[i][1] ^ s[i][3]))
-        s[i][0] ^= u
-        s[i][1] ^= v
-        s[i][2] ^= u
-        s[i][3] ^= v
+    """Inverse MixColumns."""
+    for col in range(4):
+        u = xtime(xtime(s[col][0] ^ s[col][2]))
+        v = xtime(xtime(s[col][1] ^ s[col][3]))
+        s[col][0] ^= u
+        s[col][1] ^= v
+        s[col][2] ^= u
+        s[col][3] ^= v
+    return mix_columns(s)
 
-    mix_columns(s)
+# -----------------------------------------------------------------------------
+# Key Expansion & Decryption logic
+# -----------------------------------------------------------------------------
+def expand_key(master_key):
+    """Sinh các Subkeys từ Master Key."""
+    key_columns = bytes2matrix(master_key)
+    iteration_size = len(master_key) // 4
+
+    rcon_idx = 1
+    while len(key_columns) < (N_ROUNDS + 1) * 4:
+        word = list(key_columns[-1])
+
+        if len(key_columns) % iteration_size == 0:
+            word.append(word.pop(0))
+            word = [S_BOX[b] for b in word]
+            word[0] ^= R_CON[rcon_idx]
+            rcon_idx += 1
+        elif len(master_key) == 32 and len(key_columns) % iteration_size == 4:
+            word = [S_BOX[b] for b in word]
+
+        word = bytes(b1 ^ b2 for b1, b2 in zip(word, key_columns[-iteration_size]))
+        key_columns.append(word)
+
+    return [key_columns[4*i : 4*(i+1)] for i in range(len(key_columns) // 4)]
 
 def decrypt(key, ciphertext):
-    round_keys = expand_key(key) # Remember to start from the last round key and work backwards through them when decrypting
+    """Giải mã Ciphertext bằng Secret Key."""
+    round_keys = expand_key(key)
+    s = bytes2matrix(ciphertext)
 
-    # Convert ciphertext to state matrix
+    # Round ban đầu
+    s = add_round_key(s, round_keys[N_ROUNDS])
 
-    ciphertext = bytes2matrix(ciphertext)
-    print(ciphertext, round_keys)
-    add_round_key(ciphertext, round_keys[-1])
-
-    # Initial add round key step
-
-    inv_shift_rows(ciphertext)
-    inv_sub_bytes(ciphertext)
-
+    # Các round trung gian
     for i in range(N_ROUNDS - 1, 0, -1):
-        add_round_key(ciphertext, round_keys[i])
-        inv_mix_columns(ciphertext)
-        inv_shift_rows(ciphertext)
-        inv_sub_bytes(ciphertext)
+        s = inv_shift_rows(s)
+        s = inv_sub_bytes(s)
+        s = add_round_key(s, round_keys[i])
+        s = inv_mix_columns(s)
 
-    # Run final round (skips the InvMixColumns step)
+    # Round cuối cùng (không có InvMixColumns)
+    s = inv_shift_rows(s)
+    s = inv_sub_bytes(s)
+    s = add_round_key(s, round_keys[0])
 
-    add_round_key(ciphertext, round_keys[0])
+    return matrix2bytes(s)
 
-    # Convert state matrix to plaintext
+if __name__ == "__main__":
+    plaintext = decrypt(key, ciphertext)
+    print(plaintext)
+```
 
-    return matrix2bytes(ciphertext)
-
-
-print("".join([chr(k) for k in decrypt(key, ciphertext)]))
-```1
-
-> **Flag:** `crypto{modular_binomials_solved}
+> **Flag:** crypto{modular_binomials_solved}
