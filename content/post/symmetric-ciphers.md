@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 10:46:42'
+lastmod: '2026-10-21 10:58:29'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -23,15 +23,14 @@ We've provided the key expansion code, and ciphertext that's been properly encry
 
 ### 2. Phân tích 
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
-Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.
+Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.  
 Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
-Dùng hàm expand_key để biến master_key từ dãy 16 bytes thành N+1 = 11 round_key để áp dung vào mỗi round
-Hàm AddRoundKey, InvShiftRows, InvSubBytes, InvMixColumns lần lượt được áp dung vào theo thứ tự, quy luật của mô hình giải Structure of AES.
-Giải mã xuất phát từ round cuối, cho ciphertext qua hàm AddRoundkey, sau đó đi qua N-1 round biến đổi theo thứ tự 
-InvShiftRows, InvSubBytes, AddRoundKey, InvMixColumns
-Ở round cuối bỏ hàm InvMixColumns.
-Bài này giúp ta hiểu rõ hơn cấu trúc của một hàm mã hóa cũng như giải mã AES cơ bản.
-Ta có thể dùng hàm AES trong thư viện Crypto.Cipher để mã hóa, giải mã.
+- Dùng hàm expand_key để biến master_key từ dãy 16 bytes thành $N_{rounds}+1 = 11$ round_key để áp dụng vào mỗi round.
+- Các hàm `AddRoundKey`,`InvShiftRows`, `InvSubBytes`, `InvMixColumns` lần lượt được áp dụng theo đúng thứ tự nghịch đảo của mô hình cấu trúc AES.
+- Quá trình giải mã xuất phát từ round cuối (Round 10): Cho ciphertext đi qua hàm `AddRoundKey` đầu tiên (với round_keys[10]), sau đó trải qua $N_{rounds}-1 = 9$ round biến đổi lặp lại theo thứ tự:`InvShiftRows` $\rightarrow$ `InvSubBytes` $\rightarrow$ `AddRoundKey` $\rightarrow$ `InvMixColumns`
+- Ở round cuối cùng (Round 0), ta thực hiện tương tự nhưng bỏ qua hàm `InvMixColumns`.  
+Bài này giúp ta hiểu rõ hơn cấu trúc của một hàm mã hóa cũng như giải mã AES cơ bản.  
+Trong thực tế hoặc các bài toán chuẩn, ta có thể dùng trực tiếp thư viện Crypto.Cipher để giải mã ngắn gọn:
 ```python
 from Crypto.Cipher import AES
 plaintext = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
