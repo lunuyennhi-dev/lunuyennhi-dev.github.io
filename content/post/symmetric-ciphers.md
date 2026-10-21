@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 22:31:46'
+lastmod: '2026-10-22 00:35:16'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -325,8 +325,8 @@ def encrypt_flag():
 
     return {"ciphertext": encrypted.hex()}
 ```
-Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên một từ trong danh sách từ điển (words), sau đó băm MD5 từ đó để làm KEY 16 bytes (128 bits) cho AES.   
-Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` từ danh sách và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
+Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên một từ trong danh sách từ điển (words), sau đó băm MD5 để làm KEY 16 bytes (128 bits) cho AES.   
+Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` được tạo từ danh sách và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
 
 ### 3. Lời giải
 ``` python 
@@ -355,3 +355,38 @@ for word in words:
         break
 ```
 > **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
+## ECB Oracle
+### 1. Mô tả đề bài 
+ECB is the most simple mode, with each plaintext block encrypted entirely independently. In this case, your input is prepended to the secret flag and encrypted and that's it. We don't even provide a decrypt function. Perhaps you don't need a padding oracle when you have an "ECB oracle"?
+
+Play at https://aes.cryptohack.org/ecb_oracle
+### 2. Phân tích 
+![](/images/post/cryptohack/image-1792592244701.png)
+Source code:
+``` python 
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecb_oracle/encrypt/<plaintext>/')
+def encrypt(plaintext):
+    plaintext = bytes.fromhex(plaintext)
+
+    padded = pad(plaintext + FLAG.encode(), 16)
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        encrypted = cipher.encrypt(padded)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"ciphertext": encrypted.hex()}
+```
+Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.  
+Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
+Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
+Ta sẽ khai thác điểm yếu này và sử dụng tấn công AES ECB Oracle.  
+Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
