@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 22:12:10'
+lastmod: '2026-10-21 22:31:46'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -246,15 +246,15 @@ def encrypt_flag():
 
 ```
 Ảnh mô tả chế độ AES-ECB (Electronic Codebook).   
-Ở chế độ này, thông điệp (Plaintext) được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một Key để mã hóa ra các khối Ciphertext riêng biệt.   
+Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt.   
 Mục đích chính của bài là giúp ta làm quen với giao diện tương tác API của CryptoHack.
 ### 3. Lời giải
 Trên giao diện web, có thể lấy được flag qua các bước sau:
-- Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa ciphertext.
+- Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa `ciphertext`.
 
-- Copy chuỗi ciphertext đó dán vào ô ciphertext của mục DECRYPT(...) ngay bên dưới rồi bấm SUBMIT.
+- Copy chuỗi `ciphertext` đó dán vào ô ciphertext của mục DECRYPT(...) ngay bên dưới rồi bấm SUBMIT.
 
-- Nhận về chuỗi Hex `plaintext`, decode ở mục Hex `Encoder/Decoder`để lấy được flag.
+- Nhận về chuỗi Hex `plaintext`, decode ở mục Hex Encoder/Decoder để lấy được flag.
 
 Ta cũng có thể sử dụng thư viện `requests` để tương tác trực tiếp với API của CryptoHack:
 ``` python 
@@ -325,6 +325,33 @@ def encrypt_flag():
 
     return {"ciphertext": encrypted.hex()}
 ```
-Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên từ từ điển tiếng anh.  
-Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` từ tập hợp của nó và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
-3. Lời giải
+Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên một từ trong danh sách từ điển (words), sau đó băm MD5 từ đó để làm KEY 16 bytes (128 bits) cho AES.   
+Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` từ danh sách và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
+
+### 3. Lời giải
+``` python 
+import hashlib
+import requests
+from Crypto.Cipher import AES
+
+BASE_URL = "http://aes.cryptohack.org/passwords_as_keys"
+
+r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
+ciphertext_hex = r["ciphertext"]
+ciphertext = bytes.fromhex(ciphertext_hex)
+
+WORDS_URL = "https://gist.githubusercontent.com/wchargin/8927565/raw/d9783627c731268fb2935a731a618aa8e95cf465/words"
+
+words_text = requests.get(WORDS_URL).text
+words = [w.strip() for w in words_text.splitlines() if w.strip()]
+
+for word in words:
+    KEY = hashlib.md5(word.encode()).digest()
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    decrypted = cipher.decrypt(ciphertext)
+
+    if decrypted.startswith(b"crypto{"):
+        print(decrypted.decode())
+        break
+```
+> **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
