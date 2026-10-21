@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 00:35:16'
+lastmod: '2026-10-22 00:47:03'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -389,4 +389,11 @@ Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.
 Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
 Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
 Ta sẽ khai thác điểm yếu này và sử dụng tấn công AES ECB Oracle.  
-Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
+Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
+
+Phân tích source code:
+- `padded = pad(plaintext + FLAG.encode(), 16)` Chuỗi plaintext do người dùng nhập được ghép với `FLAG` và đưa vào hàm `pad(,16)` hàm này đảm bảo tổng độ dài dữ liệu luôn vừa tròn bội số của 16 bytes.
+- `cipher = AES.new(KEY, AES.MODE_ECB)` ` encrypted = cipher.encrypt(padded)` Toàn bộ khối dữ liệu sau khi pad được mã hóa bằng AES-ECB.
+
+Khai thác:
+- Ta đã biết `FLAG` có dạng **crypto{...}**
