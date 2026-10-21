@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 10:15:51'
+lastmod: '2026-10-21 10:46:42'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -23,7 +23,20 @@ We've provided the key expansion code, and ciphertext that's been properly encry
 
 ### 2. Phân tích 
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
-
+Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.
+Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
+Dùng hàm expand_key để biến master_key từ dãy 16 bytes thành N+1 = 11 round_key để áp dung vào mỗi round
+Hàm AddRoundKey, InvShiftRows, InvSubBytes, InvMixColumns lần lượt được áp dung vào theo thứ tự, quy luật của mô hình giải Structure of AES.
+Giải mã xuất phát từ round cuối, cho ciphertext qua hàm AddRoundkey, sau đó đi qua N-1 round biến đổi theo thứ tự 
+InvShiftRows, InvSubBytes, AddRoundKey, InvMixColumns
+Ở round cuối bỏ hàm InvMixColumns.
+Bài này giúp ta hiểu rõ hơn cấu trúc của một hàm mã hóa cũng như giải mã AES cơ bản.
+Ta có thể dùng hàm AES trong thư viện Crypto.Cipher để mã hóa, giải mã.
+```python
+from Crypto.Cipher import AES
+plaintext = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
+print(plaintext)
+```
 ### 3. Script
 
 ```python
@@ -194,4 +207,4 @@ if __name__ == "__main__":
     print(plaintext)
 ```
 
-> **Flag:** crypto{modular_binomials_solved}
+> **Flag:** crypto{MYAES128}
