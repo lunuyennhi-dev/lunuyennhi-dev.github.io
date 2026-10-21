@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 11:01:09'
+lastmod: '2026-10-21 22:12:10'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -36,7 +36,7 @@ from Crypto.Cipher import AES
 plaintext = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
 print(plaintext)
 ```
-### 3. Script
+### 3. Lời giải
 
 ```python
 N_ROUNDS = 10
@@ -207,3 +207,124 @@ if __name__ == "__main__":
 ```
 
 > **Flag:** crypto{MYAES128}
+## Modes of Operation Starter
+### 1. Mô tả đề bài 
+The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
+
+All modes have serious weaknesses when used incorrectly. The challenges in this category take you to a different section of the website where you can interact with APIs and exploit those weaknesses. Get yourself acquainted with the interface and use it to take your next flag!
+Play at https://aes.cryptohack.org/block_cipher_starter
+### 2. Phân tích
+Truy cập đường link ta thấy được hình ảnh mô tả thuật mã hóa và source code của nó 
+![](/images/post/cryptohack/image-1792592244701.png)
+``` python 
+from Crypto.Cipher import AES
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/block_cipher_starter/decrypt/<ciphertext>/')
+def decrypt(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/block_cipher_starter/encrypt_flag/')
+def encrypt_flag():
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    encrypted = cipher.encrypt(FLAG.encode())
+
+    return {"ciphertext": encrypted.hex()}
+
+```
+Ảnh mô tả chế độ AES-ECB (Electronic Codebook).   
+Ở chế độ này, thông điệp (Plaintext) được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một Key để mã hóa ra các khối Ciphertext riêng biệt.   
+Mục đích chính của bài là giúp ta làm quen với giao diện tương tác API của CryptoHack.
+### 3. Lời giải
+Trên giao diện web, có thể lấy được flag qua các bước sau:
+- Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa ciphertext.
+
+- Copy chuỗi ciphertext đó dán vào ô ciphertext của mục DECRYPT(...) ngay bên dưới rồi bấm SUBMIT.
+
+- Nhận về chuỗi Hex `plaintext`, decode ở mục Hex `Encoder/Decoder`để lấy được flag.
+
+Ta cũng có thể sử dụng thư viện `requests` để tương tác trực tiếp với API của CryptoHack:
+``` python 
+import requests
+
+BASE_URL = "http://aes.cryptohack.org/block_cipher_starter"
+
+r_encrypt = requests.get(f"{BASE_URL}/encrypt_flag/")
+data_encrypt = r_encrypt.json()
+ciphertext = data_encrypt["ciphertext"]
+print(f"[+] Ciphertext: {ciphertext}")
+
+r_decrypt = requests.get(f"{BASE_URL}/decrypt/{ciphertext}/")
+data_decrypt = r_decrypt.json()
+plaintext_hex = data_decrypt["plaintext"]
+print(f"[+] Plaintext (Hex): {plaintext_hex}")
+
+flag = bytes.fromhex(plaintext_hex).decode('utf-8')
+print(f"[+] Flag: {flag}")
+```
+> **Flag:** crypto{bl0ck_c1ph3r5_4r3_f457_!}
+## Passwords as Keys
+### 1. Mô tả đề bài
+It is essential that keys in symmetric-key algorithms are random bytes, instead of passwords or other predictable data. The random bytes should be generated using a cryptographically-secure pseudorandom number generator (CSPRNG). If the keys are predictable in any way, then the security level of the cipher is reduced and it may be possible for an attacker who gets access to the ciphertext to decrypt it.
+
+Just because a key looks like it is formed of random bytes, does not mean that it necessarily is. In this case the key has been derived from a simple password using a hashing function, which makes the ciphertext crackable.
+
+For this challenge you may script your HTTP requests to the endpoints, or alternatively attack the ciphertext offline. Good luck!
+
+Play at https://aes.cryptohack.org/passwords_as_keys
+### 2. Phân tích 
+![](/images/post/cryptohack/image-1792592244701.png)
+Source code: 
+``` python 
+from Crypto.Cipher import AES
+import hashlib
+import random
+
+
+# /usr/share/dict/words from
+# https://gist.githubusercontent.com/wchargin/8927565/raw/d9783627c731268fb2935a731a618aa8e95cf465/words
+with open("/usr/share/dict/words") as f:
+    words = [w.strip() for w in f.readlines()]
+keyword = random.choice(words)
+
+KEY = hashlib.md5(keyword.encode()).digest()
+FLAG = ?
+
+
+@chal.route('/passwords_as_keys/decrypt/<ciphertext>/<password_hash>/')
+def decrypt(ciphertext, password_hash):
+    ciphertext = bytes.fromhex(ciphertext)
+    key = bytes.fromhex(password_hash)
+
+    cipher = AES.new(key, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/passwords_as_keys/encrypt_flag/')
+def encrypt_flag():
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    encrypted = cipher.encrypt(FLAG.encode())
+
+    return {"ciphertext": encrypted.hex()}
+```
+Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên từ từ điển tiếng anh.  
+Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` từ tập hợp của nó và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
+3. Lời giải
