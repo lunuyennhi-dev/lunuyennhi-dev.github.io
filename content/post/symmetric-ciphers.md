@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 14:45:42'
+lastmod: '2026-10-22 15:19:29'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -247,7 +247,7 @@ def encrypt_flag():
 ```
 ![](/images/post/cryptohack/image-1792592244701.png)
    
->Chế độ ECB (Electronic Codebook)  
+>**Chế độ ECB (Electronic Codebook)**
 >- Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt. 
 
 Mục đích chính của bài là giới thiệu mode ECB và giúp ta làm quen với giao diện tương tác API của CryptoHack.
@@ -479,7 +479,23 @@ Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weaknes
 
 Play at https://aes.cryptohack.org/ecbcbcwtf
 ### 2. Phân tích
-Source code 
+
+![](/images/post/cryptohack/image-1792653145489.png)
+> **Chế độ CBC (Cipher Block Chaining)**
+> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có độ dài đúng bằng khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước..
+> - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó **CBC** sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
+>$$C_1 = E_K(P_1 \oplus IV)$$
+> 
+> - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
+>$$C_i = E_K(P_i \oplus C_{i-1})$$
+>
+**Nhận xét**
+*Mode CBC* khắc phục được điểm yếu của *Mode ECB* nhưng cũng có những điểm yếu có thể bị khai thác.
+- **Ưu điểm**: Xóa bỏ *Pattern Leakage*: Nhờ cơ chế liên kết chuỗi (chaining) qua phép XOR, hai khối `Plaintext` giống hệt nhau ($P_i = P_j$) khi mã hóa sẽ cho ra hai khối `Ciphertext` hoàn toàn khác nhau ($C_i \neq C_j$).
+- **Nhược điểm**: 
+    - **Mã hóa tuần tự**: Không thể song song hóa (parallelize) quá trình mã hóa vì block sau phụ thuộc vào kết quả của block trước (tuy nhiên quá trình giải mã thì vẫn song song hóa được) 
+    - **Nhạy cảm với Padding** (Bit-Flip & Padding Oracle Attack): Nếu tấn công thay đổi 1 bit trên $C_{i-1}$, khi giải mã thì $P_i$ sẽ bị biến đổi tương ứng ở đúng vị trí bit đó. Đây là cơ sở cho các dạng bài tấn công CBC Bit-Flip và Padding Oracle Attack.
+Phân tích source code:  
 ``` python 
 from Crypto.Cipher import AES
 import os
@@ -512,12 +528,7 @@ def encrypt_flag():
 
     return {"ciphertext": ciphertext}
 ```
-![](/images/post/cryptohack/image-1792653145489.png)
-> Chế độ CBC (Cipher Block Chaining)
-> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có cùng độ dài với khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước..
-> - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó CBC sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
->$$C_1 = E_K(P_1 \oplus IV)$$
-> 
-> - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
->$$C_i = E_K(P_i \oplus C_{i-1})$$
->
+- Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
+- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên.
+
+Để giải quyết bài này, 
