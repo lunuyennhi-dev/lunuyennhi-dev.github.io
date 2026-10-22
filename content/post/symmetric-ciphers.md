@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 16:03:07'
+lastmod: '2026-10-22 17:28:16'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -484,10 +484,10 @@ FLAG: crypto{p3n6u1n5_h473_3cb}
 Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
 
 Play at https://aes.cryptohack.org/ecbcbcwtf
-### 2. Phân tích
+### 2. Chế độ CBC (Cipher Block Chaining)
 
 ![](/images/post/cryptohack/image-1792653145489.png)
-> **Chế độ CBC (Cipher Block Chaining)**
+
 > - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có độ dài đúng bằng khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước.
 > - Nguyên lý mã hóa: 
 >   - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó **CBC** sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
@@ -498,12 +498,14 @@ Play at https://aes.cryptohack.org/ecbcbcwtf
 >Quy trình giải mã diễn ra theo chiều ngược lại:
 >   - Block đầu tiên:$$P_1 = D_K(C_1) \oplus IV$$
 >   - Các block tiếp theo:$$P_i = D_K(C_i) \oplus C_{i-1}$$
+
 **Nhận xét**  
 *Mode CBC* khắc phục được điểm yếu của *Mode ECB* nhưng cũng có những điểm yếu có thể bị khai thác.
 - **Ưu điểm**: Xóa bỏ *Pattern Leakage*: Nhờ cơ chế liên kết chuỗi (chaining) qua phép XOR, hai khối `Plaintext` giống hệt nhau ($P_i = P_j$) khi mã hóa sẽ cho ra hai khối `Ciphertext` hoàn toàn khác nhau ($C_i \neq C_j$).
 - **Nhược điểm**: 
     - **Mã hóa tuần tự**: Không thể song song hóa (parallelize) quá trình mã hóa vì block sau phụ thuộc vào kết quả của block trước (tuy nhiên quá trình giải mã thì vẫn song song hóa được) 
     - **Nhạy cảm với Padding** (Bit-Flip & Padding Oracle Attack): Nếu tấn công thay đổi 1 bit trên $C_{i-1}$, khi giải mã thì $P_i$ sẽ bị biến đổi tương ứng ở đúng vị trí bit đó. Đây là cơ sở cho các dạng bài tấn công CBC Bit-Flip và Padding Oracle Attack.
+### 3. Phân tích
 Phân tích source code:  
 ``` python 
 from Crypto.Cipher import AES
@@ -539,3 +541,31 @@ def encrypt_flag():
 ```
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
 - Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
+
+### 4. Lời giải 
+``` python 
+import requests
+
+BASE_URL = "https://aes.cryptohack.org/ecbcbcwtf/"
+#Gửi request để lấy ciphertext
+r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
+ciphertext_hex = r["ciphertext"]
+ciphertext = bytes.fromhex(ciphertext_hex)
+#Tách ciphertext thành các khối 16 bytes
+C = [ciphertext[i:i + 16]
+
+for i in range(0,len(ciphertext),16)]
+P=[]
+#Hàm gửi ciphertext để lâý plaintext được giải mã bằng ECB
+def decrypt(ciphertext):
+    response = requests.get(f"{BASE_URL}/decrypt/{ciphertext.hex()}/")
+    data = response.json()
+    return bytes.fromhex(data["plaintext"])
+#Sử dụng SOR để khôi phục flag
+for i in range(1,len(C)):
+    c= decrypt(C[i])
+    P.append(bytes(a^b for a,b in zip(c,C[i-1])))
+flag= b"".join(P)
+print(flag)
+```
+> **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
