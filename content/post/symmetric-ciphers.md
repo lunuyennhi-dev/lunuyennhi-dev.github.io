@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 14:00:56'
+lastmod: '2026-10-22 14:45:42'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -215,7 +215,7 @@ All modes have serious weaknesses when used incorrectly. The challenges in this 
 Play at https://aes.cryptohack.org/block_cipher_starter
 ### 2. Phân tích
 Truy cập đường link ta thấy được hình ảnh mô tả thuật mã hóa và source code của nó 
-![](/images/post/cryptohack/image-1792592244701.png)
+
 ``` python 
 from Crypto.Cipher import AES
 
@@ -245,9 +245,12 @@ def encrypt_flag():
     return {"ciphertext": encrypted.hex()}
 
 ```
-Ảnh mô tả chế độ AES-ECB (Electronic Codebook).   
-Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt.   
-Mục đích chính của bài là giúp ta làm quen với giao diện tương tác API của CryptoHack.
+![](/images/post/cryptohack/image-1792592244701.png)
+   
+>Chế độ ECB (Electronic Codebook)  
+>- Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt. 
+
+Mục đích chính của bài là giới thiệu mode ECB và giúp ta làm quen với giao diện tương tác API của CryptoHack.
 ### 3. Lời giải
 Trên giao diện web, có thể lấy được flag qua các bước sau:
 - Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa `ciphertext`.
@@ -470,3 +473,51 @@ crypto{p3n6u1n5_h473_3cb}
 FLAG: crypto{p3n6u1n5_h473_3cb}
 ```
 > **Flag:**  crypto{p3n6u1n5_h473_3cb}
+## ECB CBC WTF
+### 1. Mô tả đề bài
+Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
+
+Play at https://aes.cryptohack.org/ecbcbcwtf
+### 2. Phân tích
+Source code 
+``` python 
+from Crypto.Cipher import AES
+import os
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecbcbcwtf/decrypt/<ciphertext>/')
+def decrypt(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/ecbcbcwtf/encrypt_flag/')
+def encrypt_flag():
+    iv = os.urandom(16)
+
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(FLAG.encode())
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"ciphertext": ciphertext}
+```
+![](/images/post/cryptohack/image-1792653145489.png)
+> Chế độ CBC (Cipher Block Chaining)
+> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có cùng độ dài với khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước..
+> - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó CBC sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
+>$$C_1 = E_K(P_1 \oplus IV)$$
+> 
+> - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
+>$$C_i = E_K(P_i \oplus C_{i-1})$$
+>
