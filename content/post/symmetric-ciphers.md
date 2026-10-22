@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 10:44:43'
+lastmod: '2026-10-22 14:00:56'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -396,8 +396,24 @@ Phân tích source code:
 - `cipher = AES.new(KEY, AES.MODE_ECB)` ` encrypted = cipher.encrypt(padded)` Toàn bộ khối dữ liệu sau khi pad được mã hóa bằng AES-ECB.
 
 Khai thác:
-- Ta đã biết `FLAG` có dạng **crypto{...}**
-- Vì 
+- FLAG có dạng crypto{...}.
+- Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.
+- Tìm $\text{FLAG}[0]$:
+    - Truyền plaintext = 15 bytes 'a'   
+    $\rightarrow$ Khối 1 (16 bytes) gồm: aaaaaaaaaaaaaaa + $\text{FLAG}[0]$. 
+    - Lưu 16 bytes ciphertext trả về làm chuẩn.
+    - Brute-force local: Thử các input aaaaaaaaaaaaaaa + $X$ ($X$ là chữ, số, ký tự đặc biệt) đến khi khối ciphertext trả về trùng với khối chuẩn  
+    $\rightarrow$ Tìm được $\text{FLAG}[0]$.
+- Tìm các ký tự tiếp theo trong Khối 1 ($\text{FLAG}[1 \dots 15]$):  
+    - Bớt 1 byte đệm ở đầu: truyền 14 bytes 'a'   
+    $\rightarrow$ Khối 1 gồm: aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $\text{FLAG}[1]$.
+    - Thử aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $X$ để tìm $\text{FLAG}[1]$.
+    - Lặp lại việc giảm dần byte đệm 'a' đến khi giải mã xong 16 bytes đầu tiên.
+- Mở rộng sang Khối 2 ($\text{FLAG}[16 \dots 31]$):
+    - Đệm lại 15 bytes 'a' ở đầu   
+    $\rightarrow$ Kéo $\text{FLAG}[16]$ vào vị trí cuối của Khối 2 (byte thứ 32).
+    - Thử chuỗi aaaaaaaaaaaaaaa + $\text{FLAG}[0 \dots 15]$ + $X$ và so sánh kết quả ở Khối 2 (16 bytes thứ hai, tức byte 16–31 của ciphertext).
+- Dừng vòng lặp khi ký tự tìm được là dấu đóng ngoặc }
 ### 3. Lời giải
 ``` python 
 import requests
