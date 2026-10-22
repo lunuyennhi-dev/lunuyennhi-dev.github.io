@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 00:47:03'
+lastmod: '2026-10-22 10:44:43'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -397,3 +397,60 @@ Phân tích source code:
 
 Khai thác:
 - Ta đã biết `FLAG` có dạng **crypto{...}**
+- Vì 
+### 3. Lời giải
+``` python 
+import requests
+
+URL = "https://aes.cryptohack.org/ecb_oracle/encrypt"
+CHARS = b"abcdefghijklmnopqrstuvwxyz0123456789_{}-"
+s = requests.Session()
+
+
+def oracle(x):
+    r = s.get(f"{URL}/{x.hex()}/", timeout=10)
+    return bytes.fromhex(r.json()["ciphertext"])
+
+flag = b"crypto{"
+
+for i in range(len(flag), 128):
+    padding = b"A" * (31 - i % 16)
+    start = 16 * (i // 16 + 1)
+
+    target = oracle(padding)[start:start + 16]
+
+    for c in CHARS:
+        test = padding + flag + bytes([c])
+
+        if oracle(test)[start:start + 16] == target:
+            flag += bytes([c])
+            print(flag.decode())
+            break
+    if flag.endswith(b"}"):
+        break
+
+print("FLAG:", flag.decode())
+```
+Output:
+``` text
+crypto{p
+crypto{p3
+crypto{p3n
+crypto{p3n6
+crypto{p3n6u
+crypto{p3n6u1
+crypto{p3n6u1n
+crypto{p3n6u1n5
+crypto{p3n6u1n5_
+crypto{p3n6u1n5_h
+crypto{p3n6u1n5_h4
+crypto{p3n6u1n5_h47
+crypto{p3n6u1n5_h473
+crypto{p3n6u1n5_h473_
+crypto{p3n6u1n5_h473_3
+crypto{p3n6u1n5_h473_3c
+crypto{p3n6u1n5_h473_3cb
+crypto{p3n6u1n5_h473_3cb}
+FLAG: crypto{p3n6u1n5_h473_3cb}
+```
+> **Flag:**  crypto{p3n6u1n5_h473_3cb}
