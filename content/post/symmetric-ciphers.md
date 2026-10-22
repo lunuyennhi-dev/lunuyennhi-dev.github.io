@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 15:19:29'
+lastmod: '2026-10-22 15:40:14'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -482,14 +482,17 @@ Play at https://aes.cryptohack.org/ecbcbcwtf
 
 ![](/images/post/cryptohack/image-1792653145489.png)
 > **Chế độ CBC (Cipher Block Chaining)**
-> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có độ dài đúng bằng khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước..
-> - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó **CBC** sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
+> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có độ dài đúng bằng khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước.
+> - Nguyên lý mã hóa: 
+>   - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó **CBC** sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
 >$$C_1 = E_K(P_1 \oplus IV)$$
-> 
-> - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
+>   - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
 >$$C_i = E_K(P_i \oplus C_{i-1})$$
->
-**Nhận xét**
+>- Nguyên lý giải mã:  
+>Quy trình giải mã diễn ra theo chiều ngược lại:
+>   - Block đầu tiên:$$P_1 = D_K(C_1) \oplus IV$$
+>   - Các block tiếp theo:$$P_i = D_K(C_i) \oplus C_{i-1}$$
+**Nhận xét**  
 *Mode CBC* khắc phục được điểm yếu của *Mode ECB* nhưng cũng có những điểm yếu có thể bị khai thác.
 - **Ưu điểm**: Xóa bỏ *Pattern Leakage*: Nhờ cơ chế liên kết chuỗi (chaining) qua phép XOR, hai khối `Plaintext` giống hệt nhau ($P_i = P_j$) khi mã hóa sẽ cho ra hai khối `Ciphertext` hoàn toàn khác nhau ($C_i \neq C_j$).
 - **Nhược điểm**: 
@@ -529,6 +532,4 @@ def encrypt_flag():
     return {"ciphertext": ciphertext}
 ```
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
-- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên.
-
-Để giải quyết bài này, 
+- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**.
