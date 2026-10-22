@@ -1,15 +1,16 @@
 ---
 title: WannaWin Training - Cryptography
 description: ESB and RSA
-date: 2026-10-12
-lastmod: 2026-10-12
-cover: "/images/covers/w1training.webp"
-banner: "/images/covers/w1training.webp"
+draft: false
+date: '2026-10-12 00:00:00.000Z'
+lastmod: '2026-10-22 23:52:13'
+cover: /images/covers/w1training.webp
+banner: /images/covers/w1training.webp
 math: true
 tags:
   - Cryptography
 categories:
-  - Learning 
+  - Learning
 ---
 ## ECB
 ### 1. Source code
@@ -45,7 +46,7 @@ Output:
 ### 2. Phân tích bài
 Đây là một bài giải mã AES_ECB với khóa key được tạo ngẫu nhiên từ hàm **secrets.randbelow(1_000_001)**  
 
-Ta cần giải mã **ciphertext** nhiều lần với key tạo ngẫu nhiên đến khi thu được flag có dạng **W1{}**
+Ta cần giải mã **ciphertext** nhiều lần với key brute force từ 1 đến 1_000_001 đến khi thu được flag có dạng **W1{}**
 Flag được mã hóa như sau:
 ```python
 ct = AES.new(key, AES.MODE_ECB).encrypt(FLAG)
@@ -57,12 +58,10 @@ decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
 Bây giờ chỉ cần viết chương trình python tìm key để **decrypted** bắt đầu với **W1{** là xong.
 ### 3. Script
 ```python
-import secrets
 from Crypto.Cipher import AES
 ciphertext = bytes.fromhex('a58fd383d77105ed4cec2ff0eb3e483dea0d8bf2d963ce6e61a7c875a8b4edea')
 flag=True
-while flag:
-    key_int = secrets.randbelow(1_000_001) 
+for key_int in range(1_000_001):
     key = key_int.to_bytes(16, "big")
     decrypted = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
     if decrypted.startswith(b'W1{'):
