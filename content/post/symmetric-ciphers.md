@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 15:40:14'
+lastmod: '2026-10-22 16:03:07'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -391,32 +391,38 @@ def encrypt(plaintext):
 Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.  
 Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
 Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
-Ta sẽ khai thác điểm yếu này và sử dụng tấn công AES ECB Oracle.  
+Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.  
 Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
 
 Phân tích source code:
 - `padded = pad(plaintext + FLAG.encode(), 16)` Chuỗi plaintext do người dùng nhập được ghép với `FLAG` và đưa vào hàm `pad(,16)` hàm này đảm bảo tổng độ dài dữ liệu luôn vừa tròn bội số của 16 bytes.
 - `cipher = AES.new(KEY, AES.MODE_ECB)` ` encrypted = cipher.encrypt(padded)` Toàn bộ khối dữ liệu sau khi pad được mã hóa bằng AES-ECB.
 
-Khai thác:
-- FLAG có dạng crypto{...}.
-- Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.
-- Tìm $\text{FLAG}[0]$:
-    - Truyền plaintext = 15 bytes 'a'   
+> **Kỹ thuật tấn công AES ECB Oracle**  
+>
+> Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
+>
+> Tìm $\text{FLAG}[0]$:
+>    - Truyền plaintext = 15 bytes 'a'   
     $\rightarrow$ Khối 1 (16 bytes) gồm: aaaaaaaaaaaaaaa + $\text{FLAG}[0]$. 
-    - Lưu 16 bytes ciphertext trả về làm chuẩn.
-    - Brute-force local: Thử các input aaaaaaaaaaaaaaa + $X$ ($X$ là chữ, số, ký tự đặc biệt) đến khi khối ciphertext trả về trùng với khối chuẩn  
-    $\rightarrow$ Tìm được $\text{FLAG}[0]$.
-- Tìm các ký tự tiếp theo trong Khối 1 ($\text{FLAG}[1 \dots 15]$):  
-    - Bớt 1 byte đệm ở đầu: truyền 14 bytes 'a'   
+>    - Lưu 16 bytes ciphertext trả về làm chuẩn.
+>    - Brute-force local: Thử các input aaaaaaaaaaaaaaa + $X$ ($X$ là chữ, số, ký tự đặc biệt) đến khi khối ciphertext trả về trùng với khối chuẩn  
+    $\rightarrow$ Tìm được $\text{FLAG}[0]$.  
+>
+>Tìm các ký tự tiếp theo trong Khối 1 ($\text{FLAG}[1 \dots 15]$):  
+>    - Bớt 1 byte đệm ở đầu: truyền 14 bytes 'a'   
     $\rightarrow$ Khối 1 gồm: aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $\text{FLAG}[1]$.
-    - Thử aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $X$ để tìm $\text{FLAG}[1]$.
-    - Lặp lại việc giảm dần byte đệm 'a' đến khi giải mã xong 16 bytes đầu tiên.
-- Mở rộng sang Khối 2 ($\text{FLAG}[16 \dots 31]$):
-    - Đệm lại 15 bytes 'a' ở đầu   
+>    - Thử aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $X$ để tìm $\text{FLAG}[1]$.
+>    - Lặp lại việc giảm dần byte đệm 'a' đến khi giải mã xong 16 bytes đầu tiên.
+>
+>Mở rộng sang Khối 2 ($\text{FLAG}[16 \dots 31]$):
+>    - Đệm lại 15 bytes 'a' ở đầu   
     $\rightarrow$ Kéo $\text{FLAG}[16]$ vào vị trí cuối của Khối 2 (byte thứ 32).
-    - Thử chuỗi aaaaaaaaaaaaaaa + $\text{FLAG}[0 \dots 15]$ + $X$ và so sánh kết quả ở Khối 2 (16 bytes thứ hai, tức byte 16–31 của ciphertext).
-- Dừng vòng lặp khi ký tự tìm được là dấu đóng ngoặc }
+>    - Thử chuỗi aaaaaaaaaaaaaaa + $\text{FLAG}[0 \dots 15]$ + $X$ và so sánh kết quả ở Khối 2 (16 bytes thứ hai, tức byte 16–31 của ciphertext).
+>
+> Dừng vòng lặp khi ký tự tìm được là dấu đóng ngoặc }   
+
+Áp dụng thuật tấn công **AES ECB Oracle** với FLAG đã biết 7 bytes đầu **crypto{**
 ### 3. Lời giải
 ``` python 
 import requests
@@ -532,4 +538,4 @@ def encrypt_flag():
     return {"ciphertext": ciphertext}
 ```
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
-- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**.
+- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
