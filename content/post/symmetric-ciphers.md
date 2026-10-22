@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-21 10:15:51'
+lastmod: '2026-10-22 17:28:16'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -23,8 +23,20 @@ We've provided the key expansion code, and ciphertext that's been properly encry
 
 ### 2. Phân tích 
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
-
-### 3. Script
+Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.  
+Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
+- Dùng hàm `expand_key` để biến `master_key` từ dãy 16 bytes thành $N_{rounds}+1 = 11$ `round_key`để áp dụng vào mỗi round.
+- Các hàm `AddRoundKey`,`InvShiftRows`, `InvSubBytes`, `InvMixColumns` lần lượt được áp dụng theo đúng thứ tự nghịch đảo của mô hình cấu trúc AES.
+- Quá trình giải mã xuất phát từ round cuối (Round 10): Cho ciphertext đi qua hàm `AddRoundKey` đầu tiên (với round_keys[10]), sau đó trải qua $N_{rounds}-1 = 9$ round biến đổi lặp lại theo thứ tự:`InvShiftRows` $\rightarrow$ `InvSubBytes` $\rightarrow$ `AddRoundKey` $\rightarrow$ `InvMixColumns`
+- Ở round cuối cùng (Round 0), ta thực hiện tương tự nhưng bỏ qua hàm `InvMixColumns`.  
+Bài này giúp ta hiểu rõ hơn cấu trúc của một hàm mã hóa cũng như giải mã AES cơ bản.  
+Trong thực tế hoặc các bài toán chuẩn, ta có thể dùng trực tiếp thư viện `Crypto.Cipher` để giải mã ngắn gọn:
+```python
+from Crypto.Cipher import AES
+plaintext = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
+print(plaintext)
+```
+### 3. Lời giải
 
 ```python
 N_ROUNDS = 10
@@ -194,4 +206,366 @@ if __name__ == "__main__":
     print(plaintext)
 ```
 
-> **Flag:** crypto{modular_binomials_solved}
+> **Flag:** crypto{MYAES128}
+## Modes of Operation Starter
+### 1. Mô tả đề bài 
+The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
+
+All modes have serious weaknesses when used incorrectly. The challenges in this category take you to a different section of the website where you can interact with APIs and exploit those weaknesses. Get yourself acquainted with the interface and use it to take your next flag!
+Play at https://aes.cryptohack.org/block_cipher_starter
+### 2. Phân tích
+Truy cập đường link ta thấy được hình ảnh mô tả thuật mã hóa và source code của nó 
+
+``` python 
+from Crypto.Cipher import AES
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/block_cipher_starter/decrypt/<ciphertext>/')
+def decrypt(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/block_cipher_starter/encrypt_flag/')
+def encrypt_flag():
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    encrypted = cipher.encrypt(FLAG.encode())
+
+    return {"ciphertext": encrypted.hex()}
+
+```
+![](/images/post/cryptohack/image-1792592244701.png)
+   
+>**Chế độ ECB (Electronic Codebook)**
+>- Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt. 
+
+Mục đích chính của bài là giới thiệu mode ECB và giúp ta làm quen với giao diện tương tác API của CryptoHack.
+### 3. Lời giải
+Trên giao diện web, có thể lấy được flag qua các bước sau:
+- Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa `ciphertext`.
+
+- Copy chuỗi `ciphertext` đó dán vào ô ciphertext của mục DECRYPT(...) ngay bên dưới rồi bấm SUBMIT.
+
+- Nhận về chuỗi Hex `plaintext`, decode ở mục Hex Encoder/Decoder để lấy được flag.
+
+Ta cũng có thể sử dụng thư viện `requests` để tương tác trực tiếp với API của CryptoHack:
+``` python 
+import requests
+
+BASE_URL = "http://aes.cryptohack.org/block_cipher_starter"
+
+r_encrypt = requests.get(f"{BASE_URL}/encrypt_flag/")
+data_encrypt = r_encrypt.json()
+ciphertext = data_encrypt["ciphertext"]
+print(f"[+] Ciphertext: {ciphertext}")
+
+r_decrypt = requests.get(f"{BASE_URL}/decrypt/{ciphertext}/")
+data_decrypt = r_decrypt.json()
+plaintext_hex = data_decrypt["plaintext"]
+print(f"[+] Plaintext (Hex): {plaintext_hex}")
+
+flag = bytes.fromhex(plaintext_hex).decode('utf-8')
+print(f"[+] Flag: {flag}")
+```
+> **Flag:** crypto{bl0ck_c1ph3r5_4r3_f457_!}
+## Passwords as Keys
+### 1. Mô tả đề bài
+It is essential that keys in symmetric-key algorithms are random bytes, instead of passwords or other predictable data. The random bytes should be generated using a cryptographically-secure pseudorandom number generator (CSPRNG). If the keys are predictable in any way, then the security level of the cipher is reduced and it may be possible for an attacker who gets access to the ciphertext to decrypt it.
+
+Just because a key looks like it is formed of random bytes, does not mean that it necessarily is. In this case the key has been derived from a simple password using a hashing function, which makes the ciphertext crackable.
+
+For this challenge you may script your HTTP requests to the endpoints, or alternatively attack the ciphertext offline. Good luck!
+
+Play at https://aes.cryptohack.org/passwords_as_keys
+### 2. Phân tích 
+![](/images/post/cryptohack/image-1792592244701.png)
+Source code: 
+``` python 
+from Crypto.Cipher import AES
+import hashlib
+import random
+
+
+# /usr/share/dict/words from
+# https://gist.githubusercontent.com/wchargin/8927565/raw/d9783627c731268fb2935a731a618aa8e95cf465/words
+with open("/usr/share/dict/words") as f:
+    words = [w.strip() for w in f.readlines()]
+keyword = random.choice(words)
+
+KEY = hashlib.md5(keyword.encode()).digest()
+FLAG = ?
+
+
+@chal.route('/passwords_as_keys/decrypt/<ciphertext>/<password_hash>/')
+def decrypt(ciphertext, password_hash):
+    ciphertext = bytes.fromhex(ciphertext)
+    key = bytes.fromhex(password_hash)
+
+    cipher = AES.new(key, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/passwords_as_keys/encrypt_flag/')
+def encrypt_flag():
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    encrypted = cipher.encrypt(FLAG.encode())
+
+    return {"ciphertext": encrypted.hex()}
+```
+Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên một từ trong danh sách từ điển (words), sau đó băm MD5 để làm KEY 16 bytes (128 bits) cho AES.   
+Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` được tạo từ danh sách và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
+
+### 3. Lời giải
+``` python 
+import hashlib
+import requests
+from Crypto.Cipher import AES
+
+BASE_URL = "http://aes.cryptohack.org/passwords_as_keys"
+
+r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
+ciphertext_hex = r["ciphertext"]
+ciphertext = bytes.fromhex(ciphertext_hex)
+
+WORDS_URL = "https://gist.githubusercontent.com/wchargin/8927565/raw/d9783627c731268fb2935a731a618aa8e95cf465/words"
+
+words_text = requests.get(WORDS_URL).text
+words = [w.strip() for w in words_text.splitlines() if w.strip()]
+
+for word in words:
+    KEY = hashlib.md5(word.encode()).digest()
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    decrypted = cipher.decrypt(ciphertext)
+
+    if decrypted.startswith(b"crypto{"):
+        print(decrypted.decode())
+        break
+```
+> **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
+## ECB Oracle
+### 1. Mô tả đề bài 
+ECB is the most simple mode, with each plaintext block encrypted entirely independently. In this case, your input is prepended to the secret flag and encrypted and that's it. We don't even provide a decrypt function. Perhaps you don't need a padding oracle when you have an "ECB oracle"?
+
+Play at https://aes.cryptohack.org/ecb_oracle
+### 2. Phân tích 
+![](/images/post/cryptohack/image-1792592244701.png)
+Source code:
+``` python 
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecb_oracle/encrypt/<plaintext>/')
+def encrypt(plaintext):
+    plaintext = bytes.fromhex(plaintext)
+
+    padded = pad(plaintext + FLAG.encode(), 16)
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        encrypted = cipher.encrypt(padded)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"ciphertext": encrypted.hex()}
+```
+Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.  
+Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
+Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
+Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.  
+Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
+
+Phân tích source code:
+- `padded = pad(plaintext + FLAG.encode(), 16)` Chuỗi plaintext do người dùng nhập được ghép với `FLAG` và đưa vào hàm `pad(,16)` hàm này đảm bảo tổng độ dài dữ liệu luôn vừa tròn bội số của 16 bytes.
+- `cipher = AES.new(KEY, AES.MODE_ECB)` ` encrypted = cipher.encrypt(padded)` Toàn bộ khối dữ liệu sau khi pad được mã hóa bằng AES-ECB.
+
+> **Kỹ thuật tấn công AES ECB Oracle**  
+>
+> Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
+>
+> Tìm $\text{FLAG}[0]$:
+>    - Truyền plaintext = 15 bytes 'a'   
+    $\rightarrow$ Khối 1 (16 bytes) gồm: aaaaaaaaaaaaaaa + $\text{FLAG}[0]$. 
+>    - Lưu 16 bytes ciphertext trả về làm chuẩn.
+>    - Brute-force local: Thử các input aaaaaaaaaaaaaaa + $X$ ($X$ là chữ, số, ký tự đặc biệt) đến khi khối ciphertext trả về trùng với khối chuẩn  
+    $\rightarrow$ Tìm được $\text{FLAG}[0]$.  
+>
+>Tìm các ký tự tiếp theo trong Khối 1 ($\text{FLAG}[1 \dots 15]$):  
+>    - Bớt 1 byte đệm ở đầu: truyền 14 bytes 'a'   
+    $\rightarrow$ Khối 1 gồm: aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $\text{FLAG}[1]$.
+>    - Thử aaaaaaaaaaaaaa + $\text{FLAG}[0]$ + $X$ để tìm $\text{FLAG}[1]$.
+>    - Lặp lại việc giảm dần byte đệm 'a' đến khi giải mã xong 16 bytes đầu tiên.
+>
+>Mở rộng sang Khối 2 ($\text{FLAG}[16 \dots 31]$):
+>    - Đệm lại 15 bytes 'a' ở đầu   
+    $\rightarrow$ Kéo $\text{FLAG}[16]$ vào vị trí cuối của Khối 2 (byte thứ 32).
+>    - Thử chuỗi aaaaaaaaaaaaaaa + $\text{FLAG}[0 \dots 15]$ + $X$ và so sánh kết quả ở Khối 2 (16 bytes thứ hai, tức byte 16–31 của ciphertext).
+>
+> Dừng vòng lặp khi ký tự tìm được là dấu đóng ngoặc }   
+
+Áp dụng thuật tấn công **AES ECB Oracle** với FLAG đã biết 7 bytes đầu **crypto{**
+### 3. Lời giải
+``` python 
+import requests
+
+URL = "https://aes.cryptohack.org/ecb_oracle/encrypt"
+CHARS = b"abcdefghijklmnopqrstuvwxyz0123456789_{}-"
+s = requests.Session()
+
+
+def oracle(x):
+    r = s.get(f"{URL}/{x.hex()}/", timeout=10)
+    return bytes.fromhex(r.json()["ciphertext"])
+
+flag = b"crypto{"
+
+for i in range(len(flag), 128):
+    padding = b"A" * (31 - i % 16)
+    start = 16 * (i // 16 + 1)
+
+    target = oracle(padding)[start:start + 16]
+
+    for c in CHARS:
+        test = padding + flag + bytes([c])
+
+        if oracle(test)[start:start + 16] == target:
+            flag += bytes([c])
+            print(flag.decode())
+            break
+    if flag.endswith(b"}"):
+        break
+
+print("FLAG:", flag.decode())
+```
+Output:
+``` text
+crypto{p
+crypto{p3
+crypto{p3n
+crypto{p3n6
+crypto{p3n6u
+crypto{p3n6u1
+crypto{p3n6u1n
+crypto{p3n6u1n5
+crypto{p3n6u1n5_
+crypto{p3n6u1n5_h
+crypto{p3n6u1n5_h4
+crypto{p3n6u1n5_h47
+crypto{p3n6u1n5_h473
+crypto{p3n6u1n5_h473_
+crypto{p3n6u1n5_h473_3
+crypto{p3n6u1n5_h473_3c
+crypto{p3n6u1n5_h473_3cb
+crypto{p3n6u1n5_h473_3cb}
+FLAG: crypto{p3n6u1n5_h473_3cb}
+```
+> **Flag:**  crypto{p3n6u1n5_h473_3cb}
+## ECB CBC WTF
+### 1. Mô tả đề bài
+Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
+
+Play at https://aes.cryptohack.org/ecbcbcwtf
+### 2. Chế độ CBC (Cipher Block Chaining)
+
+![](/images/post/cryptohack/image-1792653145489.png)
+
+> - Sử dụng vector khởi tạo $IV$ (initialization vector) ngẫu nhiên có độ dài đúng bằng khối mã hoá, $IV$ không cần giữ bí mật nhưng bắt buộc phải không thể dự đoán trước.
+> - Nguyên lý mã hóa: 
+>   - Đầu tiên, ta lấy `plaintext` XOR với $IV$, sau đó **CBC** sẽ lấy kết quả đó mã hóa và trả về `ciphertext` block 
+>$$C_1 = E_K(P_1 \oplus IV)$$
+>   - Trong khối mã hóa tiếp theo, ta lấy `plaintext` xor với `ciphertext` trả về của block trước đó, tiếp tục mã hóa đến block cuối. 
+>$$C_i = E_K(P_i \oplus C_{i-1})$$
+>- Nguyên lý giải mã:  
+>Quy trình giải mã diễn ra theo chiều ngược lại:
+>   - Block đầu tiên:$$P_1 = D_K(C_1) \oplus IV$$
+>   - Các block tiếp theo:$$P_i = D_K(C_i) \oplus C_{i-1}$$
+
+**Nhận xét**  
+*Mode CBC* khắc phục được điểm yếu của *Mode ECB* nhưng cũng có những điểm yếu có thể bị khai thác.
+- **Ưu điểm**: Xóa bỏ *Pattern Leakage*: Nhờ cơ chế liên kết chuỗi (chaining) qua phép XOR, hai khối `Plaintext` giống hệt nhau ($P_i = P_j$) khi mã hóa sẽ cho ra hai khối `Ciphertext` hoàn toàn khác nhau ($C_i \neq C_j$).
+- **Nhược điểm**: 
+    - **Mã hóa tuần tự**: Không thể song song hóa (parallelize) quá trình mã hóa vì block sau phụ thuộc vào kết quả của block trước (tuy nhiên quá trình giải mã thì vẫn song song hóa được) 
+    - **Nhạy cảm với Padding** (Bit-Flip & Padding Oracle Attack): Nếu tấn công thay đổi 1 bit trên $C_{i-1}$, khi giải mã thì $P_i$ sẽ bị biến đổi tương ứng ở đúng vị trí bit đó. Đây là cơ sở cho các dạng bài tấn công CBC Bit-Flip và Padding Oracle Attack.
+### 3. Phân tích
+Phân tích source code:  
+``` python 
+from Crypto.Cipher import AES
+import os
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecbcbcwtf/decrypt/<ciphertext>/')
+def decrypt(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/ecbcbcwtf/encrypt_flag/')
+def encrypt_flag():
+    iv = os.urandom(16)
+
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(FLAG.encode())
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"ciphertext": ciphertext}
+```
+- Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
+- Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
+
+### 4. Lời giải 
+``` python 
+import requests
+
+BASE_URL = "https://aes.cryptohack.org/ecbcbcwtf/"
+#Gửi request để lấy ciphertext
+r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
+ciphertext_hex = r["ciphertext"]
+ciphertext = bytes.fromhex(ciphertext_hex)
+#Tách ciphertext thành các khối 16 bytes
+C = [ciphertext[i:i + 16]
+
+for i in range(0,len(ciphertext),16)]
+P=[]
+#Hàm gửi ciphertext để lâý plaintext được giải mã bằng ECB
+def decrypt(ciphertext):
+    response = requests.get(f"{BASE_URL}/decrypt/{ciphertext.hex()}/")
+    data = response.json()
+    return bytes.fromhex(data["plaintext"])
+#Sử dụng SOR để khôi phục flag
+for i in range(1,len(C)):
+    c= decrypt(C[i])
+    P.append(bytes(a^b for a,b in zip(c,C[i-1])))
+flag= b"".join(P)
+print(flag)
+```
+> **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
