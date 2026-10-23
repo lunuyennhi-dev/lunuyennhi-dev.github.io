@@ -703,6 +703,10 @@ player:
     enable: true
     options:
       audio:
+        - name: "Khó để yêu"
+          artist: "Vũ Thanh Vân"
+          url: "/music/Khó để yêu.mp3"
+          cover: "/music/cover.png"
         - name: "Idea 22"
           artist: "Gibran Alcocer"
           url: "/music/Idea22.mp3"
@@ -715,6 +719,7 @@ player:
           artist: "Evan Call"
           url: "/music/For 1000 Years.mp3"
           cover: "/music/cover.png"
+
       fixed: false
       autoplay: true
       loop: "all"
