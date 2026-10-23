@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 11:20:37'
+lastmod: '2026-10-23 11:44:50'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -645,8 +645,37 @@ def get_cookie():
 Quay trở lại với bài toán, ta phân tích ciphertext lấy được, phần plaintext ta cần thay đổi nằm ở khối $C_{0}$.
 Ta thực hiện phép XOR local: $$IV' =  P_0\oplus IV \oplus P_0'$$
 Trong đó: 
-- $P_{0}$ : Khối plaintext gốc chưa b"admin=Fals"
+- $P_{0}$ : Khối plaintext gốc chứa b"admin=Fals"
 - $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
-- $P_{0}'$ : Khối plaintext đã thay đổi chứa b"admin=True"
+- $P_{0}'$ : Khối plaintext mục tiêu chứa b"admin=True"
 ### 3. Lời giải:
+``` python
+import requests
 
+BASE_URL = "https://aes.cryptohack.org"
+
+#Lấy cookie từ server
+r = requests.get(f"{BASE_URL}/flipping_cookie/get_cookie/")
+cookie_hex = r.json()["cookie"]
+cookie = bytes.fromhex(cookie_hex)
+
+# Tách IV (16 bytes đầu) và Ciphertext phần sau
+iv = cookie[:16]
+ciphertext = cookie[16:].hex()
+
+# Xác định khối plaintext gốc (P0) và khối plaintext mục tiêu (P0') đúng 16 bytes
+P0 = b"admin=False;expi"
+P_fixed = b"admin=True;expir" # thêm các kí tự tiếp theo 'expiry' để đủ 16 bytes 
+
+# Tính toán IV mới 
+iv_new = bytes(b1 ^ b2 ^ b3 for b1, b2, b3 in zip(P0, iv, P_fixed))
+iv_new_hex = iv_new.hex()
+
+#Gửi request kiểm tra admin để lấy flag
+response = requests.get(
+    f"{BASE_URL}/flipping_cookie/check_admin/{ciphertext}/{iv_new_hex}/"
+)
+data = response.json()
+
+print(data["flag"])
+```
