@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 09:47:57'
+lastmod: '2026-10-23 10:43:14'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -624,3 +624,28 @@ def get_cookie():
 ```
 - Hàm `check_admin` nhận input cookie và iv người dùng nhập vào, chuyển cookie và iv từ hex về bytes, sau đó giải mã cookie theo `AES.MODE_CBC` với vector khởi tạo là iv, unpad cookie đã được giải mã. Nếu nhận được chuỗi *b"admin=True"* trong cookie đã được nối, output trả ra là FLAG, nếu không sẽ thông báo bạn không phải admin.
 - Hàm `get_cookie` cookie gốc là chuỗi kí tự *f"admin=False;expiry={expires_at}"* với expires_at là dấu thời gian ở thời điểm lấy. iv được chọn ngẫu nhiên có độ dài 16 bytes. Cookie được pad thành các khối 16 bytes và mã hóa bằng `AES.MODE_CBC` với vector khởi tạo là iv. Output là ciphertext dạng hex được ghép từ iv và cookie đã mã hóa.
+
+Để lấy được FLAG ta cần thay đổi ciphertext để phần cookie sau khi giải mã sẽ thay đổi từ *"admin=False"* sang *"admin=True"*
+
+Áp dụng thuật tấn công **Bit-Flipping Attack**    
+>**Bit-Flipping Attack**
+>  
+> Tham khảo: https://www.bigous.me/technical/cbc-bit-flipping-en/    
+>                   
+> Bit-Flipping ( Tấn công lật bit ) cho phép ta thao túng, thay đổi dữ liệu mà không cần biết khóa bí mật KEY.  
+> Công thức giải mã của AES mode CBC: $$P_i = D_K(C_i) \oplus C_{i-1}$$  
+>$$ \iff D_K(C_i) = P_i\oplus C_{i-1}$$
+> Ta cần biến đổi $P_i$ thành $P_i'$, khi đó: $$P_i' = D_K(C_i) \oplus C_{i-1}'$$  
+>$$ \iff P_i' =  P_i\oplus C_{i-1} \oplus C_{i-1}'$$
+>$$ \iff C_{i-1}' =  P_i\oplus C_{i-1} \oplus P_i' $$  
+>Với $C_{0}$:
+>  $$C_{0}' =  P_0\oplus IV \oplus P_0' $$
+> Vậy, không cần Key, ta vẫn có thể thay đổi Plaintext khi biết được cấu trúc của khối Plaintext gốc tại vị trí muốn thay đổi.
+
+Quay trở lại với bài toán, ta phân tích ciphertext lấy được, phần plaintext ta cần thay đổi nằm ở khối $C_{0}$ với index [7...11]
+Ta thực hiện phép XOR local: $$C_{0}' =  P_0\oplus IV \oplus P_0'$$
+Trong đó: 
+- $P_{0}$ : f"admin=False;expiry={expires_at}"
+- $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
+- $P_{0}'$ : f"admin=True;expiry={expires_at}"
+### 3. Lời giải:
