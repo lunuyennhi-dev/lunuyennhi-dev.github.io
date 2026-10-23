@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 17:28:16'
+lastmod: '2026-10-23 08:36:22'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,7 +14,9 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-
+## Kiến thức cần biết về AES
+![Structure](/images/post/cryptohack/image-1792546393859.png)
+AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận
 ## Bringing It All Together
 
 ### 1. Mô tả đề bài
@@ -22,7 +24,7 @@ categories:
 We've provided the key expansion code, and ciphertext that's been properly encrypted by AES-128. Copy in all the building blocks you've coded so far, and complete the decrypt function that implements the steps shown in the diagram. The decrypted plaintext is the flag.
 
 ### 2. Phân tích 
-![Structure](/images/post/cryptohack/image-1792546393859.png)
+
 Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.  
 Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
 - Dùng hàm `expand_key` để biến `master_key` từ dãy 16 bytes thành $N_{rounds}+1 = 11$ `round_key`để áp dụng vào mỗi round.
