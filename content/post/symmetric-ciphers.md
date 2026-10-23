@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 16:41:05'
+lastmod: '2026-10-23 17:15:08'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -734,8 +734,24 @@ def receive(ciphertext):
 
     return {"success": "Your message has been received"}
 ```
-- Hàm `encrypt()` và hàm `receive()` đơn giản là hai hàm mã hóa plaintext và giải mã ciphertext để gửi đi tin nhắn
-- Hàm `get_flag()`là hàm kiểm tra key, nếu người dùng nhập đúng key = KEY sẽ trả về FLAG
+- Hàm `encrypt(plaintext)` và hàm `receive(ciphertext)` đơn giản là hai hàm mã hóa plaintext và giải mã ciphertext để gửi đi tin nhắn, hàm `receive(ciphertext)` chỉ trả về plaintext đã decrypt chỉ khi kiểm tra decrypted.decode() không phải ASCII.
+- Hàm `get_flag(key)`là hàm kiểm tra key, nếu người dùng nhập đúng key = KEY sẽ trả về FLAG.
 
-Điểm đặc biệt là tác giả chương trình CBC encryption này "lười" nên đã dùng $IV$ là KEY, nhưng không biết $IV$ có thể khôi phục được:
+Điểm đặc biệt là tác giả chương trình CBC encryption này "lười" nên đã dùng $IV$ làm $KEY$, nhưng không biết $IV$ có thể khôi phục được.  
+Ta có 
 $$P_1 = D_K(C_1) \oplus IV$$
+$$P_2 = D_K(C_2) \oplus C_1$$
+$$P_3 = D_K(C_3) \oplus C_2$$
+Suy ra 
+$$P_1 \oplus P_2= D_K(C_1) \oplus IV \oplus D_K(C_2) \oplus C_1$$
+Nếu chọn các giá trị $C_1$, $C_2$ đều bằng 0, ta sẽ được
+$$P_1 \oplus P_2= D_K(0) \oplus IV \oplus D_K(0) \oplus 0= IV$$
+Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) vào hàm `receive(ciphertext)` lúc này khối plaintext trả về sẽ khác ASCII nên chương trình sẽ trả plaintext đã được decrypt cho ta, XOR 2 khối plaintext nhận được và lấy được key dạng hex.
+### 3. Lời giải
+![](/images/post/symmetric-ciphers/image-1792750413627.png)
+![](/images/post/symmetric-ciphers/image-1792750420184.png)
+![](/images/post/symmetric-ciphers/image-1792750425410.png)
+![](/images/post/symmetric-ciphers/image-1792750429792.png)
+![](/images/post/symmetric-ciphers/image-1792750432933.png)
+![](/images/post/symmetric-ciphers/image-1792750437433.png)
+> **Flag:** crypto{50m3_p30pl3_d0n7_7h1nk_IV_15_1mp0r74n7_?}
