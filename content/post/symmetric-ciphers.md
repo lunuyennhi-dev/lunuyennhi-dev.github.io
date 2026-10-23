@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 10:43:14'
+lastmod: '2026-10-23 11:20:37'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -393,8 +393,7 @@ def encrypt(plaintext):
 Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.  
 Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
 Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
-Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.  
-Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
+Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.    
 
 Phân tích source code:
 - `padded = pad(plaintext + FLAG.encode(), 16)` Chuỗi plaintext do người dùng nhập được ghép với `FLAG` và đưa vào hàm `pad(,16)` hàm này đảm bảo tổng độ dài dữ liệu luôn vừa tròn bội số của 16 bytes.
@@ -402,6 +401,7 @@ Phân tích source code:
 
 > **Kỹ thuật tấn công AES ECB Oracle**  
 >
+>Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
 > Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
 >
 > Tìm $\text{FLAG}[0]$:
@@ -633,19 +633,20 @@ def get_cookie():
 > Tham khảo: https://www.bigous.me/technical/cbc-bit-flipping-en/    
 >                   
 > Bit-Flipping ( Tấn công lật bit ) cho phép ta thao túng, thay đổi dữ liệu mà không cần biết khóa bí mật KEY.  
-> Công thức giải mã của AES mode CBC: $$P_i = D_K(C_i) \oplus C_{i-1}$$  
+> Ta có công thức giải mã của AES mode CBC: $$P_i = D_K(C_i) \oplus C_{i-1}$$  
 >$$ \iff D_K(C_i) = P_i\oplus C_{i-1}$$
 > Ta cần biến đổi $P_i$ thành $P_i'$, khi đó: $$P_i' = D_K(C_i) \oplus C_{i-1}'$$  
 >$$ \iff P_i' =  P_i\oplus C_{i-1} \oplus C_{i-1}'$$
 >$$ \iff C_{i-1}' =  P_i\oplus C_{i-1} \oplus P_i' $$  
->Với $C_{0}$:
->  $$C_{0}' =  P_0\oplus IV \oplus P_0' $$
+>Với $P_{0}$:
+>  $$IV' =  P_0\oplus IV \oplus P_0' $$
 > Vậy, không cần Key, ta vẫn có thể thay đổi Plaintext khi biết được cấu trúc của khối Plaintext gốc tại vị trí muốn thay đổi.
 
-Quay trở lại với bài toán, ta phân tích ciphertext lấy được, phần plaintext ta cần thay đổi nằm ở khối $C_{0}$ với index [7...11]
-Ta thực hiện phép XOR local: $$C_{0}' =  P_0\oplus IV \oplus P_0'$$
+Quay trở lại với bài toán, ta phân tích ciphertext lấy được, phần plaintext ta cần thay đổi nằm ở khối $C_{0}$.
+Ta thực hiện phép XOR local: $$IV' =  P_0\oplus IV \oplus P_0'$$
 Trong đó: 
-- $P_{0}$ : f"admin=False;expiry={expires_at}"
+- $P_{0}$ : Khối plaintext gốc chưa b"admin=Fals"
 - $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
-- $P_{0}'$ : f"admin=True;expiry={expires_at}"
+- $P_{0}'$ : Khối plaintext đã thay đổi chứa b"admin=True"
 ### 3. Lời giải:
+
