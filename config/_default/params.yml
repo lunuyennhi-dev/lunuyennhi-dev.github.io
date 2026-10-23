@@ -705,7 +705,7 @@ player:
       audio:
         - name: "Khó để yêu"
           artist: "Vũ Thanh Vân"
-          url: "/music/Khó để yêu.mp3"
+          url: "/music/Khodeyeu.mp3"
           cover: "/music/cover.png"
         - name: "Idea 22"
           artist: "Gibran Alcocer"
