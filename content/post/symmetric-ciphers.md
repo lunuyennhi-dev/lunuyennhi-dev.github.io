@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-22 17:28:16'
+lastmod: '2026-10-23 17:15:08'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,15 +14,18 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
+## Kiến thức cần biết về AES
+![Structure](/images/post/cryptohack/image-1792546393859.png)
+AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận. 
 
 ## Bringing It All Together
 
-### 1. Mô tả đề bài
+### 1. Đề bài
 ![Structure2](/images/post/cryptohack/image-1792546459907.png)
 We've provided the key expansion code, and ciphertext that's been properly encrypted by AES-128. Copy in all the building blocks you've coded so far, and complete the decrypt function that implements the steps shown in the diagram. The decrypted plaintext is the flag.
 
 ### 2. Phân tích 
-![Structure](/images/post/cryptohack/image-1792546393859.png)
+
 Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.  
 Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
 - Dùng hàm `expand_key` để biến `master_key` từ dãy 16 bytes thành $N_{rounds}+1 = 11$ `round_key`để áp dụng vào mỗi round.
@@ -208,7 +211,7 @@ if __name__ == "__main__":
 
 > **Flag:** crypto{MYAES128}
 ## Modes of Operation Starter
-### 1. Mô tả đề bài 
+### 1. Đề bài 
 The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
 
 All modes have serious weaknesses when used incorrectly. The challenges in this category take you to a different section of the website where you can interact with APIs and exploit those weaknesses. Get yourself acquainted with the interface and use it to take your next flag!
@@ -280,7 +283,7 @@ print(f"[+] Flag: {flag}")
 ```
 > **Flag:** crypto{bl0ck_c1ph3r5_4r3_f457_!}
 ## Passwords as Keys
-### 1. Mô tả đề bài
+### 1. Đề bài
 It is essential that keys in symmetric-key algorithms are random bytes, instead of passwords or other predictable data. The random bytes should be generated using a cryptographically-secure pseudorandom number generator (CSPRNG). If the keys are predictable in any way, then the security level of the cipher is reduced and it may be possible for an attacker who gets access to the ciphertext to decrypt it.
 
 Just because a key looks like it is formed of random bytes, does not mean that it necessarily is. In this case the key has been derived from a simple password using a hashing function, which makes the ciphertext crackable.
@@ -359,7 +362,7 @@ for word in words:
 ```
 > **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
 ## ECB Oracle
-### 1. Mô tả đề bài 
+### 1. Đề bài 
 ECB is the most simple mode, with each plaintext block encrypted entirely independently. In this case, your input is prepended to the secret flag and encrypted and that's it. We don't even provide a decrypt function. Perhaps you don't need a padding oracle when you have an "ECB oracle"?
 
 Play at https://aes.cryptohack.org/ecb_oracle
@@ -391,8 +394,7 @@ def encrypt(plaintext):
 Bài toán này vẫn mã hóa AES ở chế độ AES-ECB.  
 Chế độ này có một nhược điểm lớn: cùng một khối plaintext sẽ luôn tạo ra cùng một khối ciphertext khi sử dụng cùng một khóa.  
 Điều này dẫn đến việc dễ dàng phát hiện các mẫu trong dữ liệu, khiến nó dễ bị tấn công hơn.  
-Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.  
-Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
+Ta sẽ khai thác điểm yếu này và sử dụng tấn công **AES ECB Oracle**.    
 
 Phân tích source code:
 - `padded = pad(plaintext + FLAG.encode(), 16)` Chuỗi plaintext do người dùng nhập được ghép với `FLAG` và đưa vào hàm `pad(,16)` hàm này đảm bảo tổng độ dài dữ liệu luôn vừa tròn bội số của 16 bytes.
@@ -400,6 +402,7 @@ Phân tích source code:
 
 > **Kỹ thuật tấn công AES ECB Oracle**  
 >
+>Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
 > Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
 >
 > Tìm $\text{FLAG}[0]$:
@@ -480,7 +483,7 @@ FLAG: crypto{p3n6u1n5_h473_3cb}
 ```
 > **Flag:**  crypto{p3n6u1n5_h473_3cb}
 ## ECB CBC WTF
-### 1. Mô tả đề bài
+### 1. Đề bài
 Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
 
 Play at https://aes.cryptohack.org/ecbcbcwtf
@@ -542,6 +545,8 @@ def encrypt_flag():
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
 - Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
 
+Ta thấy để giải mã mode CBC cần XOR Ciphertext đã được decrypt của khối hiện tại với Ciphertext khối trước đó (IV đối với khối đầu tiên)để lấy được Plaintext của khối hiện tại.  
+Vậy ta chỉ cần thêm bước XOR local để khôi phục lại plaintext và nối các khối plaintext để lấy được flag cuối cùng.
 ### 4. Lời giải 
 ``` python 
 import requests
@@ -551,7 +556,7 @@ BASE_URL = "https://aes.cryptohack.org/ecbcbcwtf/"
 r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
 ciphertext_hex = r["ciphertext"]
 ciphertext = bytes.fromhex(ciphertext_hex)
-#Tách ciphertext thành các khối 16 bytes
+#Chia ciphertext thành các khối 16 bytes
 C = [ciphertext[i:i + 16]
 
 for i in range(0,len(ciphertext),16)]
@@ -561,7 +566,7 @@ def decrypt(ciphertext):
     response = requests.get(f"{BASE_URL}/decrypt/{ciphertext.hex()}/")
     data = response.json()
     return bytes.fromhex(data["plaintext"])
-#Sử dụng SOR để khôi phục flag
+#Sử dụng xOR để khôi phục flag
 for i in range(1,len(C)):
     c= decrypt(C[i])
     P.append(bytes(a^b for a,b in zip(c,C[i-1])))
@@ -569,3 +574,184 @@ flag= b"".join(P)
 print(flag)
 ```
 > **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
+## Flipping cookie
+### 1. Đề bài 
+You can get a cookie for my website, but it won't help you read the flag... I think.
+
+Play at https://aes.cryptohack.org/flipping_cookie
+### 2. Phân tích 
+Source code:
+``` python 
+from Crypto.Cipher import AES
+import os
+from Crypto.Util.Padding import pad, unpad
+from datetime import datetime, timedelta
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/flipping_cookie/check_admin/<cookie>/<iv>/')
+def check_admin(cookie, iv):
+    cookie = bytes.fromhex(cookie)
+    iv = bytes.fromhex(iv)
+
+    try:
+        cipher = AES.new(KEY, AES.MODE_CBC, iv)
+        decrypted = cipher.decrypt(cookie)
+        unpadded = unpad(decrypted, 16)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    if b"admin=True" in unpadded.split(b";"):
+        return {"flag": FLAG}
+    else:
+        return {"error": "Only admin can read the flag"}
+
+
+@chal.route('/flipping_cookie/get_cookie/')
+def get_cookie():
+    expires_at = (datetime.today() + timedelta(days=1)).strftime("%s")
+    cookie = f"admin=False;expiry={expires_at}".encode()
+
+    iv = os.urandom(16)
+    padded = pad(cookie, 16)
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(padded)
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"cookie": ciphertext}
+```
+- Hàm `check_admin` nhận input cookie và iv người dùng nhập vào, chuyển cookie và iv từ hex về bytes, sau đó giải mã cookie theo `AES.MODE_CBC` với vector khởi tạo là iv, unpad cookie đã được giải mã. Nếu nhận được chuỗi *b"admin=True"* trong cookie đã được nối, output trả ra là FLAG, nếu không sẽ thông báo bạn không phải admin.
+- Hàm `get_cookie` cookie gốc là chuỗi kí tự *f"admin=False;expiry={expires_at}"* với expires_at là dấu thời gian ở thời điểm lấy. iv được chọn ngẫu nhiên có độ dài 16 bytes. Cookie được pad thành các khối 16 bytes và mã hóa bằng `AES.MODE_CBC` với vector khởi tạo là iv. Output là ciphertext dạng hex được ghép từ iv và cookie đã mã hóa.
+
+Để lấy được FLAG ta cần thay đổi ciphertext để phần cookie sau khi giải mã sẽ thay đổi từ *"admin=False"* sang *"admin=True"*
+
+Áp dụng thuật tấn công **Bit-Flipping Attack**    
+>**Bit-Flipping Attack**
+>  
+> Tham khảo: https://www.bigous.me/technical/cbc-bit-flipping-en/    
+>                   
+> Bit-Flipping ( Tấn công lật bit ) cho phép ta thao túng, thay đổi dữ liệu mà không cần biết khóa bí mật KEY.  
+> Ta có công thức giải mã của AES mode CBC: $$P_i = D_K(C_i) \oplus C_{i-1}$$  
+>$$ \iff D_K(C_i) = P_i\oplus C_{i-1}$$
+> Ta cần biến đổi $P_i$ thành $P_i'$, khi đó: $$P_i' = D_K(C_i) \oplus C_{i-1}'$$  
+>$$ \iff P_i' =  P_i\oplus C_{i-1} \oplus C_{i-1}'$$
+>$$ \iff C_{i-1}' =  P_i\oplus C_{i-1} \oplus P_i' $$  
+>Với $P_{0}$:
+>  $$IV' =  P_0\oplus IV \oplus P_0' $$
+> Vậy, không cần Key, ta vẫn có thể thay đổi Plaintext khi biết được cấu trúc của khối Plaintext gốc tại vị trí muốn thay đổi.
+
+Quay trở lại với bài toán, ta phân tích ciphertext lấy được, phần plaintext ta cần thay đổi nằm ở khối $C_{0}$.
+Ta thực hiện phép XOR local: $$IV' =  P_0\oplus IV \oplus P_0'$$
+Trong đó: 
+- $P_{0}$ : Khối plaintext gốc chứa b"admin=Fals"
+- $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
+- $P_{0}'$ : Khối plaintext mục tiêu chứa b"admin=True"
+### 3. Lời giải
+``` python
+import requests
+
+BASE_URL = "https://aes.cryptohack.org"
+
+#Lấy cookie từ server
+r = requests.get(f"{BASE_URL}/flipping_cookie/get_cookie/")
+cookie_hex = r.json()["cookie"]
+cookie = bytes.fromhex(cookie_hex)
+
+# Tách IV (16 bytes đầu) và Ciphertext phần sau
+iv = cookie[:16]
+ciphertext = cookie[16:].hex()
+
+# Xác định khối plaintext gốc (P0) và khối plaintext mục tiêu (P0') đúng 16 bytes
+P0 = b"admin=False;expi"
+P_fixed = b"admin=True;expir" # thêm các kí tự tiếp theo 'expiry' để đủ 16 bytes 
+
+# Tính toán IV mới 
+iv_new = bytes(b1 ^ b2 ^ b3 for b1, b2, b3 in zip(P0, iv, P_fixed))
+iv_new_hex = iv_new.hex()
+
+#Gửi request kiểm tra admin để lấy flag
+response = requests.get(
+    f"{BASE_URL}/flipping_cookie/check_admin/{ciphertext}/{iv_new_hex}/"
+)
+data = response.json()
+
+print(data["flag"])
+```
+>**Flag:** crypto{4u7h3n71c4710n_15_3553n714l}
+## Lazy CBC 
+### 1. Đề bài 
+I'm just a lazy dev and want my CBC encryption to work. What's all this talk about initialisations vectors? Doesn't sound important.
+
+Play at https://aes.cryptohack.org/lazy_cbc
+### 2. Phân tích 
+Source code:
+``` python
+from Crypto.Cipher import AES
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/lazy_cbc/encrypt/<plaintext>/')
+def encrypt(plaintext):
+    plaintext = bytes.fromhex(plaintext)
+    if len(plaintext) % 16 != 0:
+        return {"error": "Data length must be multiple of 16"}
+
+    cipher = AES.new(KEY, AES.MODE_CBC, KEY)
+    encrypted = cipher.encrypt(plaintext)
+
+    return {"ciphertext": encrypted.hex()}
+
+
+@chal.route('/lazy_cbc/get_flag/<key>/')
+def get_flag(key):
+    key = bytes.fromhex(key)
+
+    if key == KEY:
+        return {"plaintext": FLAG.encode().hex()}
+    else:
+        return {"error": "invalid key"}
+
+
+@chal.route('/lazy_cbc/receive/<ciphertext>/')
+def receive(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+    if len(ciphertext) % 16 != 0:
+        return {"error": "Data length must be multiple of 16"}
+
+    cipher = AES.new(KEY, AES.MODE_CBC, KEY)
+    decrypted = cipher.decrypt(ciphertext)
+
+    try:
+        decrypted.decode() # ensure plaintext is valid ascii
+    except UnicodeDecodeError:
+        return {"error": "Invalid plaintext: " + decrypted.hex()}
+
+    return {"success": "Your message has been received"}
+```
+- Hàm `encrypt(plaintext)` và hàm `receive(ciphertext)` đơn giản là hai hàm mã hóa plaintext và giải mã ciphertext để gửi đi tin nhắn, hàm `receive(ciphertext)` chỉ trả về plaintext đã decrypt chỉ khi kiểm tra decrypted.decode() không phải ASCII.
+- Hàm `get_flag(key)`là hàm kiểm tra key, nếu người dùng nhập đúng key = KEY sẽ trả về FLAG.
+
+Điểm đặc biệt là tác giả chương trình CBC encryption này "lười" nên đã dùng $IV$ làm $KEY$, nhưng không biết $IV$ có thể khôi phục được.  
+Ta có 
+$$P_1 = D_K(C_1) \oplus IV$$
+$$P_2 = D_K(C_2) \oplus C_1$$
+$$P_3 = D_K(C_3) \oplus C_2$$
+Suy ra 
+$$P_1 \oplus P_2= D_K(C_1) \oplus IV \oplus D_K(C_2) \oplus C_1$$
+Nếu chọn các giá trị $C_1$, $C_2$ đều bằng 0, ta sẽ được
+$$P_1 \oplus P_2= D_K(0) \oplus IV \oplus D_K(0) \oplus 0= IV$$
+Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) vào hàm `receive(ciphertext)` lúc này khối plaintext trả về sẽ khác ASCII nên chương trình sẽ trả plaintext đã được decrypt cho ta, XOR 2 khối plaintext nhận được và lấy được key dạng hex.
+### 3. Lời giải
+![](/images/post/symmetric-ciphers/image-1792750413627.png)
+![](/images/post/symmetric-ciphers/image-1792750420184.png)
+![](/images/post/symmetric-ciphers/image-1792750425410.png)
+![](/images/post/symmetric-ciphers/image-1792750429792.png)
+![](/images/post/symmetric-ciphers/image-1792750432933.png)
+![](/images/post/symmetric-ciphers/image-1792750437433.png)
+> **Flag:** crypto{50m3_p30pl3_d0n7_7h1nk_IV_15_1mp0r74n7_?}
