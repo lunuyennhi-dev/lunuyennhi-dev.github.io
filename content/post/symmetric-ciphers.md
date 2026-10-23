@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 08:39:49'
+lastmod: '2026-10-23 08:47:28'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,12 +14,12 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-## Kiến thức cần biết về AES
+# Kiến thức cần biết về AES
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
 AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận 
-## Bringing It All Together
+# Bringing It All Together
 
-### 1. Mô tả đề bài
+### 1. Đề bài
 ![Structure2](/images/post/cryptohack/image-1792546459907.png)
 We've provided the key expansion code, and ciphertext that's been properly encrypted by AES-128. Copy in all the building blocks you've coded so far, and complete the decrypt function that implements the steps shown in the diagram. The decrypted plaintext is the flag.
 
@@ -209,8 +209,8 @@ if __name__ == "__main__":
 ```
 
 > **Flag:** crypto{MYAES128}
-## Modes of Operation Starter
-### 1. Mô tả đề bài 
+# Modes of Operation Starter
+### 1. Đề bài 
 The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
 
 All modes have serious weaknesses when used incorrectly. The challenges in this category take you to a different section of the website where you can interact with APIs and exploit those weaknesses. Get yourself acquainted with the interface and use it to take your next flag!
@@ -282,7 +282,7 @@ print(f"[+] Flag: {flag}")
 ```
 > **Flag:** crypto{bl0ck_c1ph3r5_4r3_f457_!}
 ## Passwords as Keys
-### 1. Mô tả đề bài
+### 1. Đề bài
 It is essential that keys in symmetric-key algorithms are random bytes, instead of passwords or other predictable data. The random bytes should be generated using a cryptographically-secure pseudorandom number generator (CSPRNG). If the keys are predictable in any way, then the security level of the cipher is reduced and it may be possible for an attacker who gets access to the ciphertext to decrypt it.
 
 Just because a key looks like it is formed of random bytes, does not mean that it necessarily is. In this case the key has been derived from a simple password using a hashing function, which makes the ciphertext crackable.
@@ -361,7 +361,7 @@ for word in words:
 ```
 > **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
 ## ECB Oracle
-### 1. Mô tả đề bài 
+### 1. Đề bài 
 ECB is the most simple mode, with each plaintext block encrypted entirely independently. In this case, your input is prepended to the secret flag and encrypted and that's it. We don't even provide a decrypt function. Perhaps you don't need a padding oracle when you have an "ECB oracle"?
 
 Play at https://aes.cryptohack.org/ecb_oracle
@@ -482,7 +482,7 @@ FLAG: crypto{p3n6u1n5_h473_3cb}
 ```
 > **Flag:**  crypto{p3n6u1n5_h473_3cb}
 ## ECB CBC WTF
-### 1. Mô tả đề bài
+### 1. Đề bài
 Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
 
 Play at https://aes.cryptohack.org/ecbcbcwtf
@@ -572,3 +572,8 @@ flag= b"".join(P)
 print(flag)
 ```
 > **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
+# Flipping cookie
+### 1. Đề bài 
+You can get a cookie for my website, but it won't help you read the flag... I think.
+
+Play at https://aes.cryptohack.org/flipping_cookie
