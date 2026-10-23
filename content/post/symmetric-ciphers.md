@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 15:33:33'
+lastmod: '2026-10-23 16:41:05'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -737,6 +737,5 @@ def receive(ciphertext):
 - Hàm `encrypt()` và hàm `receive()` đơn giản là hai hàm mã hóa plaintext và giải mã ciphertext để gửi đi tin nhắn
 - Hàm `get_flag()`là hàm kiểm tra key, nếu người dùng nhập đúng key = KEY sẽ trả về FLAG
 
-Bài này mã hóa `AES.MODE_CBC` với $IV$ là KEY, để tìm được $IV$
+Điểm đặc biệt là tác giả chương trình CBC encryption này "lười" nên đã dùng $IV$ là KEY, nhưng không biết $IV$ có thể khôi phục được:
 $$P_1 = D_K(C_1) \oplus IV$$
-$$ \iff IV=D_K(C_1) \oplus P_1 $$
