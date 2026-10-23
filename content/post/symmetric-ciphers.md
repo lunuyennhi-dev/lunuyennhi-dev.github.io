@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 08:36:22'
+lastmod: '2026-10-23 08:39:49'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -16,7 +16,7 @@ categories:
 ![CryptoHack](/images/covers/cryptohack.webp)
 ## Kiến thức cần biết về AES
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
-AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận
+AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận 
 ## Bringing It All Together
 
 ### 1. Mô tả đề bài
@@ -543,7 +543,8 @@ def encrypt_flag():
 ```
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
 - Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
-
+Ta thấy để giải mã mode CBC cần XOR Ciphertext đã được decrypt của khối hiện tại với Ciphertext khối trước đó (IV đối với khối đầu tiên)để lấy được Plaintext của khối hiện tại.  
+Vậy ta chỉ cần thêm bước XOR local để khôi phục lại plaintext và nối các khối plaintext để lấy được flag cuối cùng.
 ### 4. Lời giải 
 ``` python 
 import requests
