@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 08:47:28'
+lastmod: '2026-10-23 09:47:57'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,10 +14,10 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-# Kiến thức cần biết về AES
+## Kiến thức cần biết về AES
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
 AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận 
-# Bringing It All Together
+## Bringing It All Together
 
 ### 1. Đề bài
 ![Structure2](/images/post/cryptohack/image-1792546459907.png)
@@ -209,7 +209,7 @@ if __name__ == "__main__":
 ```
 
 > **Flag:** crypto{MYAES128}
-# Modes of Operation Starter
+## Modes of Operation Starter
 ### 1. Đề bài 
 The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
 
@@ -543,6 +543,7 @@ def encrypt_flag():
 ```
 - Hàm `decrypt(ciphertext)`giải mã ciphertext sử dụng **mode ECB** : `cipher = AES.new(KEY, AES.MODE_ECB)`
 - Hàm `encrypt_flag()` mã hóa FLAG bằng **mode CBC** với $IV$ được tạo từ `iv = os.urandom(16)`: tạo ra một chuỗi gồm 16 bytes ngẫu nhiên. Ciphertext trả về bao gồm  $IV$ (16 bytes đầu) và phần FLAG được mã hóa bằng **mode CBC**
+
 Ta thấy để giải mã mode CBC cần XOR Ciphertext đã được decrypt của khối hiện tại với Ciphertext khối trước đó (IV đối với khối đầu tiên)để lấy được Plaintext của khối hiện tại.  
 Vậy ta chỉ cần thêm bước XOR local để khôi phục lại plaintext và nối các khối plaintext để lấy được flag cuối cùng.
 ### 4. Lời giải 
@@ -554,7 +555,7 @@ BASE_URL = "https://aes.cryptohack.org/ecbcbcwtf/"
 r = requests.get(f"{BASE_URL}/encrypt_flag/").json()
 ciphertext_hex = r["ciphertext"]
 ciphertext = bytes.fromhex(ciphertext_hex)
-#Tách ciphertext thành các khối 16 bytes
+#Chia ciphertext thành các khối 16 bytes
 C = [ciphertext[i:i + 16]
 
 for i in range(0,len(ciphertext),16)]
@@ -572,8 +573,54 @@ flag= b"".join(P)
 print(flag)
 ```
 > **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
-# Flipping cookie
+## Flipping cookie
 ### 1. Đề bài 
 You can get a cookie for my website, but it won't help you read the flag... I think.
 
 Play at https://aes.cryptohack.org/flipping_cookie
+### 2. Phân tích 
+Source code:
+``` python 
+from Crypto.Cipher import AES
+import os
+from Crypto.Util.Padding import pad, unpad
+from datetime import datetime, timedelta
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/flipping_cookie/check_admin/<cookie>/<iv>/')
+def check_admin(cookie, iv):
+    cookie = bytes.fromhex(cookie)
+    iv = bytes.fromhex(iv)
+
+    try:
+        cipher = AES.new(KEY, AES.MODE_CBC, iv)
+        decrypted = cipher.decrypt(cookie)
+        unpadded = unpad(decrypted, 16)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    if b"admin=True" in unpadded.split(b";"):
+        return {"flag": FLAG}
+    else:
+        return {"error": "Only admin can read the flag"}
+
+
+@chal.route('/flipping_cookie/get_cookie/')
+def get_cookie():
+    expires_at = (datetime.today() + timedelta(days=1)).strftime("%s")
+    cookie = f"admin=False;expiry={expires_at}".encode()
+
+    iv = os.urandom(16)
+    padded = pad(cookie, 16)
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(padded)
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"cookie": ciphertext}
+```
+- Hàm `check_admin` nhận input cookie và iv người dùng nhập vào, chuyển cookie và iv từ hex về bytes, sau đó giải mã cookie theo `AES.MODE_CBC` với vector khởi tạo là iv, unpad cookie đã được giải mã. Nếu nhận được chuỗi *b"admin=True"* trong cookie đã được nối, output trả ra là FLAG, nếu không sẽ thông báo bạn không phải admin.
+- Hàm `get_cookie` cookie gốc là chuỗi kí tự *f"admin=False;expiry={expires_at}"* với expires_at là dấu thời gian ở thời điểm lấy. iv được chọn ngẫu nhiên có độ dài 16 bytes. Cookie được pad thành các khối 16 bytes và mã hóa bằng `AES.MODE_CBC` với vector khởi tạo là iv. Output là ciphertext dạng hex được ghép từ iv và cookie đã mã hóa.
