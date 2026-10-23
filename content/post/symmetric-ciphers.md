@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 11:44:50'
+lastmod: '2026-10-23 11:46:04'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -679,3 +679,4 @@ data = response.json()
 
 print(data["flag"])
 ```
+>**Flag:** crypto{4u7h3n71c4710n_15_3553n714l}
