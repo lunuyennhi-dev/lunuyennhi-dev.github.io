@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenge
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-23 11:46:04'
+lastmod: '2026-10-23 15:33:33'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -16,7 +16,8 @@ categories:
 ![CryptoHack](/images/covers/cryptohack.webp)
 ## Kiến thức cần biết về AES
 ![Structure](/images/post/cryptohack/image-1792546393859.png)
-AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận 
+AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận. 
+
 ## Bringing It All Together
 
 ### 1. Đề bài
@@ -565,7 +566,7 @@ def decrypt(ciphertext):
     response = requests.get(f"{BASE_URL}/decrypt/{ciphertext.hex()}/")
     data = response.json()
     return bytes.fromhex(data["plaintext"])
-#Sử dụng SOR để khôi phục flag
+#Sử dụng xOR để khôi phục flag
 for i in range(1,len(C)):
     c= decrypt(C[i])
     P.append(bytes(a^b for a,b in zip(c,C[i-1])))
@@ -648,7 +649,7 @@ Trong đó:
 - $P_{0}$ : Khối plaintext gốc chứa b"admin=Fals"
 - $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
 - $P_{0}'$ : Khối plaintext mục tiêu chứa b"admin=True"
-### 3. Lời giải:
+### 3. Lời giải
 ``` python
 import requests
 
@@ -680,3 +681,62 @@ data = response.json()
 print(data["flag"])
 ```
 >**Flag:** crypto{4u7h3n71c4710n_15_3553n714l}
+## Lazy CBC 
+### 1. Đề bài 
+I'm just a lazy dev and want my CBC encryption to work. What's all this talk about initialisations vectors? Doesn't sound important.
+
+Play at https://aes.cryptohack.org/lazy_cbc
+### 2. Phân tích 
+Source code:
+``` python
+from Crypto.Cipher import AES
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/lazy_cbc/encrypt/<plaintext>/')
+def encrypt(plaintext):
+    plaintext = bytes.fromhex(plaintext)
+    if len(plaintext) % 16 != 0:
+        return {"error": "Data length must be multiple of 16"}
+
+    cipher = AES.new(KEY, AES.MODE_CBC, KEY)
+    encrypted = cipher.encrypt(plaintext)
+
+    return {"ciphertext": encrypted.hex()}
+
+
+@chal.route('/lazy_cbc/get_flag/<key>/')
+def get_flag(key):
+    key = bytes.fromhex(key)
+
+    if key == KEY:
+        return {"plaintext": FLAG.encode().hex()}
+    else:
+        return {"error": "invalid key"}
+
+
+@chal.route('/lazy_cbc/receive/<ciphertext>/')
+def receive(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+    if len(ciphertext) % 16 != 0:
+        return {"error": "Data length must be multiple of 16"}
+
+    cipher = AES.new(KEY, AES.MODE_CBC, KEY)
+    decrypted = cipher.decrypt(ciphertext)
+
+    try:
+        decrypted.decode() # ensure plaintext is valid ascii
+    except UnicodeDecodeError:
+        return {"error": "Invalid plaintext: " + decrypted.hex()}
+
+    return {"success": "Your message has been received"}
+```
+- Hàm `encrypt()` và hàm `receive()` đơn giản là hai hàm mã hóa plaintext và giải mã ciphertext để gửi đi tin nhắn
+- Hàm `get_flag()`là hàm kiểm tra key, nếu người dùng nhập đúng key = KEY sẽ trả về FLAG
+
+Bài này mã hóa `AES.MODE_CBC` với $IV$ là KEY, để tìm được $IV$
+$$P_1 = D_K(C_1) \oplus IV$$
+$$ \iff IV=D_K(C_1) \oplus P_1 $$
