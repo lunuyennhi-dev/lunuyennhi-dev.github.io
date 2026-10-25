@@ -1,9 +1,9 @@
 ---
 title: WannaWin Training - Cryptography
-description: ESB and RSA
+description: ECB and RSA
 draft: false
 date: '2026-10-12 00:00:00.000Z'
-lastmod: '2026-10-22 23:52:13'
+lastmod: '2026-10-26 00:14:46'
 cover: /images/covers/w1training.webp
 banner: /images/covers/w1training.webp
 math: true
