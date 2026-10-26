@@ -1,5 +1,8 @@
 // Reimu variable override for LUN's blog
 :root {
+  --cursor-default: url('../images/default.png') 8 28, auto;
+  --cursor-pointer: url('../images/pointer.png') 9 21, pointer;
+
   --red-0: #101827;
   --red-1: #2f6fce;
   --red-2: #6fa8ff;
@@ -199,3 +202,6 @@ $tag-radius: 8px;
     font-size: 30px;
   }
 }
+
+@import "custom";
+

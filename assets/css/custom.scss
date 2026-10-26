@@ -24,3 +24,13 @@
 #preloader .preloader-icon {
   animation-duration: 5s !important;
 }
+
+/* ===== Custom cursor hotspot alignment ===== */
+html, body, #container {
+  cursor: url('../images/default.png') 8 28, auto;
+}
+
+a, .main-nav-icon, .popup-btn-close, button, .code-copy, .code-lang, .code-expand {
+  cursor: url('../images/pointer.png') 9 21, pointer !important;
+}
+

@@ -1,9 +1,9 @@
 ---
 title: Symmetric Ciphers
-description: Cryptohack challenge
+description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-25 14:52:03'
+lastmod: '2026-10-26 00:15:34'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
