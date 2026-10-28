@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-28 17:11:20'
+lastmod: '2026-10-28 17:50:11'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -372,7 +372,7 @@ Phân tích source code:
 
 > **Kỹ thuật tấn công AES ECB Oracle**  
 >
->Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
+>Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
 > Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
 >
 > Tìm $\text{FLAG}[0]$:
@@ -761,7 +761,16 @@ if __name__ == "__main__":
         print("Nope!")
 ```
 ### 2. Phân tích 
-
+Phân tích source code:
+-  `signal.alarm(15)` giới hạn thời gian trong 15s
+-  ` key = b'Dream_' + os.urandom(4) + b'Hacker'` key được tạo bằng cách chọn ngẫu nhiên 4 số, ghép vào giữa 2 phần text có sẵn là b'Dream_' và b'Hacker'. Key sau đó được tách thành key1 và key2  `key1 = key[:8]``key2 = key[8:]` key1 8 bytes đầu, key2 8 bytes cuối
+- ```python
+    cipher1 = DES.new(key1, DES.MODE_ECB)
+    cipher2 = DES.new(key2, DES.MODE_ECB)
+    encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+    decrypt = lambda x: cipher1.decrypt(cipher2.decrypt(x))
+   ```
+Để giải quyết bài này, ta sử dụng thuật tấn công **Meet in the Middle**
 ### 3. Lời giải 
 ``` python 
 from pwn import *
@@ -865,7 +874,7 @@ Bài thêm một bước XOR với $IV$, quá trình encrypt của hàm `encrypt
 $$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext \oplus IV))) \oplus IV$$
 nhưng $IV$ của bài chỉ khởi tạo 1 lần chứ không ngẫu nhiên mỗi lần mã hóa, và chỉ XOR độc lập theo từng khối nên hàm mã hóa trên vẫn không thay đổi tính chất.
 
-Và bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn:
+Bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn sau:
 - Lựa chọn 1: $K_1$,$K_2$,$K_3$ là các khóa độc lập
 - Lựa chọn 2: $K_1$,$K_2$ là hai khóa độc lập và $K_3$=$K_1$
 - Lựa chọn 3: $K_1$=$K_2$=$K_3$  
