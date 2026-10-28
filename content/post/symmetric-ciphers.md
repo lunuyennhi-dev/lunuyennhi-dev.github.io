@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-28 18:33:22'
+lastmod: '2026-10-28 18:35:57'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -783,7 +783,7 @@ Phân tích source code:
 
 
 Để giải quyết bài này, ta sử dụng thuật tấn công **Meet in the Middle**  
-Ta có thể brute-force 4 bytes để tìm lại, tương đương $2^{32}$ nhưng thời gian sẽ vượt quá 15s
+Ta có thể brute-force 4 bytes để tìm lại, tương đương $2^{32}$ lần thử nhưng thời gian sẽ vượt quá 15s  
 Ta có:    $$ ct= E_{K2}(E_{K1}(pt))$$
    $$ \iff D_{K2}(ct)= E_{K1}(pt)$$
 Sử dụng hint 

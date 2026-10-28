@@ -3,7 +3,7 @@ title: WannaWin Training - Cryptography
 description: ECB and RSA
 draft: false
 date: '2026-10-12 00:00:00.000Z'
-lastmod: '2026-10-26 00:14:46'
+lastmod: '2026-10-28 19:35:56'
 cover: /images/covers/w1training.webp
 banner: /images/covers/w1training.webp
 math: true
@@ -177,7 +177,7 @@ for combo in combinations(range(len(N)), 3):
     if is_exact:
         flag_bytes = m.to_bytes((m.bit_length() + 7) // 8)
         flag_text = flag_bytes.decode()
-        print(f"Flag (Text): {flag_text}")
+        print(flag_text)
         break
 
 ```
