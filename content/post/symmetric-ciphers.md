@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-28 15:20:34'
+lastmod: '2026-10-28 17:11:20'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -760,7 +760,9 @@ if __name__ == "__main__":
     else:
         print("Nope!")
 ```
-###3. Lời giải 
+### 2. Phân tích 
+
+### 3. Lời giải 
 ``` python 
 from pwn import *
 from Crypto.Cipher import DES
@@ -799,3 +801,93 @@ io.close()
 
 print(flag.decode())
 ```
+## Triple DES
+### 1. Đề bài
+Data Encryption Standard was the forerunner to AES, and is still widely used in some slow-moving areas like the Payment Card Industry. This challenge demonstrates a strange weakness of DES which a secure block cipher should not have.
+
+Play at https://aes.cryptohack.org/triple_des
+### 2. Phân tích
+Source code 
+``` python
+from Crypto.Cipher import DES3
+from Crypto.Util.Padding import pad
+import os
+
+
+IV = os.urandom(8)
+FLAG = ?
+
+
+def xor(a, b):
+    # xor 2 bytestrings, repeating the 2nd one if necessary
+    return bytes(x ^ y for x,y in zip(a, b * (1 + len(a) // len(b))))
+
+
+
+@chal.route('/triple_des/encrypt/<key>/<plaintext>/')
+def encrypt(key, plaintext):
+    try:
+        key = bytes.fromhex(key)
+        plaintext = bytes.fromhex(plaintext)
+        plaintext = xor(plaintext, IV)
+
+        cipher = DES3.new(key, DES3.MODE_ECB)
+        ciphertext = cipher.encrypt(plaintext)
+        ciphertext = xor(ciphertext, IV)
+
+        return {"ciphertext": ciphertext.hex()}
+
+    except ValueError as e:
+        return {"error": str(e)}
+
+
+@chal.route('/triple_des/encrypt_flag/<key>/')
+def encrypt_flag(key):
+    return encrypt(key, pad(FLAG.encode(), 8).hex())
+```
+Ở bài này, ta được chọn key cho chương trình mã hóa `DES3`   
+Phép mã hóa DES có điểm yếu là tồn tại các cặp `khóa yếu` 
+```text
+0101010101010101 FEFEFEFEFEFEFEFE
+0000000000000000 FFFFFFFFFFFFFFFF
+0000000000000000 FEFEFEFEFEFEFEFE
+0101010101010101 FFFFFFFFFFFFFFFF
+``` 
+Khi dùng cặp khóa yếu $K_1$, $K_2$ thì:
+$$ E_{K_{1}}(E_{K_{2}}(P))=P$$
+Hay phép mã hóa bằng $K_2$ sẽ chính là phép giải mã bằng $K_1$
+$$E_{K_{2}}=D_{K_{1}}$$
+Ngoài ra $$ \quad D_{K_2}(D_{K_2}(X)) = E_{K_1}(E_{K_1}(X)) = X$$
+
+Hàm mã hóa `DES3`có nguyên tắc encrypt như sao:
+$$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext)))$$
+Bài thêm một bước XOR với $IV$, quá trình encrypt của hàm `encrypt(key, plaintext)` là:
+$$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext \oplus IV))) \oplus IV$$
+nhưng $IV$ của bài chỉ khởi tạo 1 lần chứ không ngẫu nhiên mỗi lần mã hóa, và chỉ XOR độc lập theo từng khối nên hàm mã hóa trên vẫn không thay đổi tính chất.
+
+Và bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn:
+- Lựa chọn 1: $K_1$,$K_2$,$K_3$ là các khóa độc lập
+- Lựa chọn 2: $K_1$,$K_2$ là hai khóa độc lập và $K_3$=$K_1$
+- Lựa chọn 3: $K_1$=$K_2$=$K_3$  
+
+Ở bài này chỉ nhận input key có dạng tiêu chuẩn 1 hoặc 2, khi nhập key dạng tiêu chuẩn 3 sẽ có thông báo lỗi 
+![](/images/post/symmetric-ciphers/image-1793179068181.png)
+
+Dùng cặp khóa yếu `0101010101010101 FEFEFEFEFEFEFEFE`   
+Khi đó hàm encrypt trở thành
+$$ct= E_{K1}(D_{K2}(E_{K1}(pt \oplus IV))) \oplus IV$$
+$$ \iff ct= E_{K1}(pt \oplus IV) \oplus IV$$
+$$ \iff ct= D_{K2}(pt \oplus IV) \oplus IV$$
+Encrypt thêm một lần nữa:
+$$ct'= D_{K2}(D_{K2}(pt \oplus IV) \oplus IV \oplus IV) \oplus IV$$
+$$ = D_{K2}(D_{K2}(pt \oplus IV)) \oplus IV$$
+$$=pt \oplus IV\oplus IV=pt$$
+
+Vậy với cặp khóa yếu, việc lấy được flag trở nên đơn giản, ta chỉ cần encrypt phần ciphertext encrypt của flag (hay encrypt flag 2 lần), ciphertext trở về chính là flag đã được giải mã!
+### 3. Lời giải
+![](/images/post/symmetric-ciphers/image-1793177578402.png)
+![](/images/post/symmetric-ciphers/image-1793177624018.png)
+![](/images/post/symmetric-ciphers/image-1793177661940.png)
+![](/images/post/symmetric-ciphers/image-1793177686793.png)
+>**Flag:** crypto{n0t_4ll_k3ys_4r3_g00d_k3ys}
+
