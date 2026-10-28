@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-28 17:50:11'
+lastmod: '2026-10-28 18:33:22'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -763,14 +763,34 @@ if __name__ == "__main__":
 ### 2. Phân tích 
 Phân tích source code:
 -  `signal.alarm(15)` giới hạn thời gian trong 15s
--  ` key = b'Dream_' + os.urandom(4) + b'Hacker'` key được tạo bằng cách chọn ngẫu nhiên 4 số, ghép vào giữa 2 phần text có sẵn là b'Dream_' và b'Hacker'. Key sau đó được tách thành key1 và key2  `key1 = key[:8]``key2 = key[8:]` key1 8 bytes đầu, key2 8 bytes cuối
+-  ` key = b'Dream_' + os.urandom(4) + b'Hacker'` key được tạo bằng cách chọn ngẫu nhiên 4 số, ghép vào giữa 2 phần text có sẵn là b'Dream_' và b'Hacker'. Key sau đó được tách thành key1 và key2  `key1 = key[:8]` `key2 = key[8:]` key1 8 bytes đầu, key2 8 bytes cuối
 - ```python
     cipher1 = DES.new(key1, DES.MODE_ECB)
     cipher2 = DES.new(key2, DES.MODE_ECB)
     encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
     decrypt = lambda x: cipher1.decrypt(cipher2.decrypt(x))
-   ```
-Để giải quyết bài này, ta sử dụng thuật tấn công **Meet in the Middle**
+    ```
+   Đây là thuật mã hóa và giải mã cơ bản của DES, ta có thể hiểu hàm encrypt và decrypt trên như sau:
+   $$ ct= E_{K2}(E_{K1}(pt))$$
+   $$ pt= D_{K1}(D_{K2}(ct))$$
+- Hint trả về là `encrypt(b'DreamHack_blocks').hex()`dạng hex của 'DreamHack_blocks' đã được mã hóa bằng thuật mã hóa trên.
+- ```python
+     if decrypt(msg) == b'give_me_the_flag':
+        print(flag)
+    ```
+     Để lấy được flag ta cần gửi đúng ciphertext mã hóa của khối 'give_me_the_flag' đồng nghĩa với việc khôi phục được key
+
+
+
+Để giải quyết bài này, ta sử dụng thuật tấn công **Meet in the Middle**  
+Ta có thể brute-force 4 bytes để tìm lại, tương đương $2^{32}$ nhưng thời gian sẽ vượt quá 15s
+Ta có:    $$ ct= E_{K2}(E_{K1}(pt))$$
+   $$ \iff D_{K2}(ct)= E_{K1}(pt)$$
+Sử dụng hint 
+$$ \iff D_{K2}(hint)= E_{K1}('DreamHack\_blocks')$$
+Vậy ta có thể brute-force 2 bytes ở từng key rồi dừng lại khi có giá trị thỏa mãn hai phép $D_{K2}(hint)$ và $E_{K1}('DreamHack\_blocks')$ cho giá trị giống nhau.  
+Tới đây ta có thể dùng `dict` hoặc `set` trong Python để duyệt dữ liệu và chỉ dùng 2 vòng for độc lập, số lần thử $2^{16}$+$2^{16}$.
+
 ### 3. Lời giải 
 ``` python 
 from pwn import *
