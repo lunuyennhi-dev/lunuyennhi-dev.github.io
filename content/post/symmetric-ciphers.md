@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-26 00:15:34'
+lastmod: '2026-10-28 15:20:34'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,10 +14,6 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-## Kiến thức cần biết về AES
-![Structure](/images/post/cryptohack/image-1792546393859.png)
-AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận. 
-
 ## Bringing It All Together
 
 ### 1. Đề bài
@@ -729,3 +725,77 @@ Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) và
 ![](/images/post/symmetric-ciphers/image-1792750432933.png)
 ![](/images/post/symmetric-ciphers/image-1792750437433.png)
 > **Flag:** crypto{50m3_p30pl3_d0n7_7h1nk_IV_15_1mp0r74n7_?}
+## Double DES (DH)
+### 1. Đề bài
+It's as simple as a 4-byte full survey!
+
+This is a problem we practice together in **Exploit Tech: Meet in the Middle Attack.**  
+Source code prob.py
+``` python 
+#!/usr/bin/env python3
+from Crypto.Cipher import DES
+import signal
+import os
+
+if __name__ == "__main__":
+    signal.alarm(15)
+
+    with open("flag", "rb") as f:
+        flag = f.read()
+    
+    key = b'Dream_' + os.urandom(4) + b'Hacker'
+    key1 = key[:8]
+    key2 = key[8:]
+    print("4-byte Brute-forcing is easy. But can you do it in 15 seconds?")
+    cipher1 = DES.new(key1, DES.MODE_ECB)
+    cipher2 = DES.new(key2, DES.MODE_ECB)
+    encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+    decrypt = lambda x: cipher1.decrypt(cipher2.decrypt(x))
+
+    print(f"Hint for you :> {encrypt(b'DreamHack_blocks').hex()}")
+
+    msg = bytes.fromhex(input("Send your encrypted message(hex) > "))
+    if decrypt(msg) == b'give_me_the_flag':
+        print(flag)
+    else:
+        print("Nope!")
+```
+###3. Lời giải 
+``` python 
+from pwn import *
+from Crypto.Cipher import DES
+#io = process(["python3", "prob.py"])
+io = remote("host3.dreamhack.games", 21073)
+io.recvuntil(b":> ")
+
+hint = bytes.fromhex(io.recvline().decode())
+conflict = dict()
+
+for i in range(65536):
+    b = i.to_bytes(2, "big")
+    cipher = DES.new(b"Dream_" + b, DES.MODE_ECB)
+    enc = cipher.encrypt(b"DreamHack_blocks")
+    conflict[enc] = b"Dream_" + b
+
+for i in range(65536):
+    b = i.to_bytes(2, "big")
+    cipher = DES.new(b + b"Hacker", DES.MODE_ECB)
+    dec = cipher.decrypt(hint)
+
+    if dec in conflict:
+        key1 = conflict[dec]
+        key2 = b + b"Hacker"
+        break
+
+cipher1 = DES.new(key1, DES.MODE_ECB)
+cipher2 = DES.new(key2, DES.MODE_ECB)
+encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+assert encrypt(b"DreamHack_blocks") == hint
+
+io.sendlineafter(b'> ', encrypt(b"give_me_the_flag").hex().encode())
+
+flag = eval(io.recvline())
+io.close()
+
+print(flag.decode())
+```
