@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-26 00:15:34'
+lastmod: '2026-10-28 18:33:22'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,10 +14,6 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-## Kiến thức cần biết về AES
-![Structure](/images/post/cryptohack/image-1792546393859.png)
-AES là một mã khối, dữ liệu trong AES được biểu diễn dưới dạng một ma trận. 
-
 ## Bringing It All Together
 
 ### 1. Đề bài
@@ -376,7 +372,7 @@ Phân tích source code:
 
 > **Kỹ thuật tấn công AES ECB Oracle**  
 >
->Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw
+>Tham khảo: https://viblo.asia/p/gioi-thieu-ve-ki-thuat-tan-cong-aes-ecb-oracle-r1QLxwppJAw  
 > Dữ liệu được nối dạng $\text{pad}(\text{plaintext} + \text{FLAG})$. AES-ECB mã hóa các khối 16 bytes độc lập bằng cùng một key.  
 >
 > Tìm $\text{FLAG}[0]$:
@@ -729,3 +725,198 @@ Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) và
 ![](/images/post/symmetric-ciphers/image-1792750432933.png)
 ![](/images/post/symmetric-ciphers/image-1792750437433.png)
 > **Flag:** crypto{50m3_p30pl3_d0n7_7h1nk_IV_15_1mp0r74n7_?}
+## Double DES (DH)
+### 1. Đề bài
+It's as simple as a 4-byte full survey!
+
+This is a problem we practice together in **Exploit Tech: Meet in the Middle Attack.**  
+Source code prob.py
+``` python 
+#!/usr/bin/env python3
+from Crypto.Cipher import DES
+import signal
+import os
+
+if __name__ == "__main__":
+    signal.alarm(15)
+
+    with open("flag", "rb") as f:
+        flag = f.read()
+    
+    key = b'Dream_' + os.urandom(4) + b'Hacker'
+    key1 = key[:8]
+    key2 = key[8:]
+    print("4-byte Brute-forcing is easy. But can you do it in 15 seconds?")
+    cipher1 = DES.new(key1, DES.MODE_ECB)
+    cipher2 = DES.new(key2, DES.MODE_ECB)
+    encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+    decrypt = lambda x: cipher1.decrypt(cipher2.decrypt(x))
+
+    print(f"Hint for you :> {encrypt(b'DreamHack_blocks').hex()}")
+
+    msg = bytes.fromhex(input("Send your encrypted message(hex) > "))
+    if decrypt(msg) == b'give_me_the_flag':
+        print(flag)
+    else:
+        print("Nope!")
+```
+### 2. Phân tích 
+Phân tích source code:
+-  `signal.alarm(15)` giới hạn thời gian trong 15s
+-  ` key = b'Dream_' + os.urandom(4) + b'Hacker'` key được tạo bằng cách chọn ngẫu nhiên 4 số, ghép vào giữa 2 phần text có sẵn là b'Dream_' và b'Hacker'. Key sau đó được tách thành key1 và key2  `key1 = key[:8]` `key2 = key[8:]` key1 8 bytes đầu, key2 8 bytes cuối
+- ```python
+    cipher1 = DES.new(key1, DES.MODE_ECB)
+    cipher2 = DES.new(key2, DES.MODE_ECB)
+    encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+    decrypt = lambda x: cipher1.decrypt(cipher2.decrypt(x))
+    ```
+   Đây là thuật mã hóa và giải mã cơ bản của DES, ta có thể hiểu hàm encrypt và decrypt trên như sau:
+   $$ ct= E_{K2}(E_{K1}(pt))$$
+   $$ pt= D_{K1}(D_{K2}(ct))$$
+- Hint trả về là `encrypt(b'DreamHack_blocks').hex()`dạng hex của 'DreamHack_blocks' đã được mã hóa bằng thuật mã hóa trên.
+- ```python
+     if decrypt(msg) == b'give_me_the_flag':
+        print(flag)
+    ```
+     Để lấy được flag ta cần gửi đúng ciphertext mã hóa của khối 'give_me_the_flag' đồng nghĩa với việc khôi phục được key
+
+
+
+Để giải quyết bài này, ta sử dụng thuật tấn công **Meet in the Middle**  
+Ta có thể brute-force 4 bytes để tìm lại, tương đương $2^{32}$ nhưng thời gian sẽ vượt quá 15s
+Ta có:    $$ ct= E_{K2}(E_{K1}(pt))$$
+   $$ \iff D_{K2}(ct)= E_{K1}(pt)$$
+Sử dụng hint 
+$$ \iff D_{K2}(hint)= E_{K1}('DreamHack\_blocks')$$
+Vậy ta có thể brute-force 2 bytes ở từng key rồi dừng lại khi có giá trị thỏa mãn hai phép $D_{K2}(hint)$ và $E_{K1}('DreamHack\_blocks')$ cho giá trị giống nhau.  
+Tới đây ta có thể dùng `dict` hoặc `set` trong Python để duyệt dữ liệu và chỉ dùng 2 vòng for độc lập, số lần thử $2^{16}$+$2^{16}$.
+
+### 3. Lời giải 
+``` python 
+from pwn import *
+from Crypto.Cipher import DES
+#io = process(["python3", "prob.py"])
+io = remote("host3.dreamhack.games", 21073)
+io.recvuntil(b":> ")
+
+hint = bytes.fromhex(io.recvline().decode())
+conflict = dict()
+
+for i in range(65536):
+    b = i.to_bytes(2, "big")
+    cipher = DES.new(b"Dream_" + b, DES.MODE_ECB)
+    enc = cipher.encrypt(b"DreamHack_blocks")
+    conflict[enc] = b"Dream_" + b
+
+for i in range(65536):
+    b = i.to_bytes(2, "big")
+    cipher = DES.new(b + b"Hacker", DES.MODE_ECB)
+    dec = cipher.decrypt(hint)
+
+    if dec in conflict:
+        key1 = conflict[dec]
+        key2 = b + b"Hacker"
+        break
+
+cipher1 = DES.new(key1, DES.MODE_ECB)
+cipher2 = DES.new(key2, DES.MODE_ECB)
+encrypt = lambda x: cipher2.encrypt(cipher1.encrypt(x))
+assert encrypt(b"DreamHack_blocks") == hint
+
+io.sendlineafter(b'> ', encrypt(b"give_me_the_flag").hex().encode())
+
+flag = eval(io.recvline())
+io.close()
+
+print(flag.decode())
+```
+## Triple DES
+### 1. Đề bài
+Data Encryption Standard was the forerunner to AES, and is still widely used in some slow-moving areas like the Payment Card Industry. This challenge demonstrates a strange weakness of DES which a secure block cipher should not have.
+
+Play at https://aes.cryptohack.org/triple_des
+### 2. Phân tích
+Source code 
+``` python
+from Crypto.Cipher import DES3
+from Crypto.Util.Padding import pad
+import os
+
+
+IV = os.urandom(8)
+FLAG = ?
+
+
+def xor(a, b):
+    # xor 2 bytestrings, repeating the 2nd one if necessary
+    return bytes(x ^ y for x,y in zip(a, b * (1 + len(a) // len(b))))
+
+
+
+@chal.route('/triple_des/encrypt/<key>/<plaintext>/')
+def encrypt(key, plaintext):
+    try:
+        key = bytes.fromhex(key)
+        plaintext = bytes.fromhex(plaintext)
+        plaintext = xor(plaintext, IV)
+
+        cipher = DES3.new(key, DES3.MODE_ECB)
+        ciphertext = cipher.encrypt(plaintext)
+        ciphertext = xor(ciphertext, IV)
+
+        return {"ciphertext": ciphertext.hex()}
+
+    except ValueError as e:
+        return {"error": str(e)}
+
+
+@chal.route('/triple_des/encrypt_flag/<key>/')
+def encrypt_flag(key):
+    return encrypt(key, pad(FLAG.encode(), 8).hex())
+```
+Ở bài này, ta được chọn key cho chương trình mã hóa `DES3`   
+Phép mã hóa DES có điểm yếu là tồn tại các cặp `khóa yếu` 
+```text
+0101010101010101 FEFEFEFEFEFEFEFE
+0000000000000000 FFFFFFFFFFFFFFFF
+0000000000000000 FEFEFEFEFEFEFEFE
+0101010101010101 FFFFFFFFFFFFFFFF
+``` 
+Khi dùng cặp khóa yếu $K_1$, $K_2$ thì:
+$$ E_{K_{1}}(E_{K_{2}}(P))=P$$
+Hay phép mã hóa bằng $K_2$ sẽ chính là phép giải mã bằng $K_1$
+$$E_{K_{2}}=D_{K_{1}}$$
+Ngoài ra $$ \quad D_{K_2}(D_{K_2}(X)) = E_{K_1}(E_{K_1}(X)) = X$$
+
+Hàm mã hóa `DES3`có nguyên tắc encrypt như sao:
+$$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext)))$$
+Bài thêm một bước XOR với $IV$, quá trình encrypt của hàm `encrypt(key, plaintext)` là:
+$$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext \oplus IV))) \oplus IV$$
+nhưng $IV$ của bài chỉ khởi tạo 1 lần chứ không ngẫu nhiên mỗi lần mã hóa, và chỉ XOR độc lập theo từng khối nên hàm mã hóa trên vẫn không thay đổi tính chất.
+
+Bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn sau:
+- Lựa chọn 1: $K_1$,$K_2$,$K_3$ là các khóa độc lập
+- Lựa chọn 2: $K_1$,$K_2$ là hai khóa độc lập và $K_3$=$K_1$
+- Lựa chọn 3: $K_1$=$K_2$=$K_3$  
+
+Ở bài này chỉ nhận input key có dạng tiêu chuẩn 1 hoặc 2, khi nhập key dạng tiêu chuẩn 3 sẽ có thông báo lỗi 
+![](/images/post/symmetric-ciphers/image-1793179068181.png)
+
+Dùng cặp khóa yếu `0101010101010101 FEFEFEFEFEFEFEFE`   
+Khi đó hàm encrypt trở thành
+$$ct= E_{K1}(D_{K2}(E_{K1}(pt \oplus IV))) \oplus IV$$
+$$ \iff ct= E_{K1}(pt \oplus IV) \oplus IV$$
+$$ \iff ct= D_{K2}(pt \oplus IV) \oplus IV$$
+Encrypt thêm một lần nữa:
+$$ct'= D_{K2}(D_{K2}(pt \oplus IV) \oplus IV \oplus IV) \oplus IV$$
+$$ = D_{K2}(D_{K2}(pt \oplus IV)) \oplus IV$$
+$$=pt \oplus IV\oplus IV=pt$$
+
+Vậy với cặp khóa yếu, việc lấy được flag trở nên đơn giản, ta chỉ cần encrypt phần ciphertext encrypt của flag (hay encrypt flag 2 lần), ciphertext trở về chính là flag đã được giải mã!
+### 3. Lời giải
+![](/images/post/symmetric-ciphers/image-1793177578402.png)
+![](/images/post/symmetric-ciphers/image-1793177624018.png)
+![](/images/post/symmetric-ciphers/image-1793177661940.png)
+![](/images/post/symmetric-ciphers/image-1793177686793.png)
+>**Flag:** crypto{n0t_4ll_k3ys_4r3_g00d_k3ys}
+
