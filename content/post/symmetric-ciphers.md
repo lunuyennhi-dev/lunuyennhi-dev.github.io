@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-28 18:35:57'
+lastmod: '2026-10-30 00:01:29'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -919,4 +919,79 @@ Vậy với cặp khóa yếu, việc lấy được flag trở nên đơn giả
 ![](/images/post/symmetric-ciphers/image-1793177661940.png)
 ![](/images/post/symmetric-ciphers/image-1793177686793.png)
 >**Flag:** crypto{n0t_4ll_k3ys_4r3_g00d_k3ys}
+## Symmetry
+### 1. Đề bài 
+Some block cipher modes, such as OFB, CTR, or CFB, turn a block cipher into a stream cipher. The idea behind stream ciphers is to produce a pseudorandom keystream which is then XORed with the plaintext. One advantage of stream ciphers is that they can work of plaintext of arbitrary length, with no padding required.
+
+OFB is an obscure cipher mode, with no real benefits these days over using CTR. This challenge introduces an unusual property of OFB.
+
+Play at https://aes.cryptohack.org/symmetry
+### 2. Phân tích
+![](/images/post/symmetric-ciphers/image-1793291759856.png)
+Source code
+``` python 
+from Crypto.Cipher import AES
+import os
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/symmetry/encrypt/<plaintext>/<iv>/')
+def encrypt(plaintext, iv):
+    plaintext = bytes.fromhex(plaintext)
+    iv = bytes.fromhex(iv)
+    if len(iv) != 16:
+        return {"error": "IV length must be 16"}
+
+    cipher = AES.new(KEY, AES.MODE_OFB, iv)
+    encrypted = cipher.encrypt(plaintext)
+    ciphertext = encrypted.hex()
+
+    return {"ciphertext": ciphertext}
+
+
+@chal.route('/symmetry/encrypt_flag/')
+def encrypt_flag():
+    iv = os.urandom(16)
+
+    cipher = AES.new(KEY, AES.MODE_OFB, iv)
+    encrypted = cipher.encrypt(FLAG.encode())
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"ciphertext": ciphertext}
+
+```
+>Một số chế độ mã hóa khối, chẳng hạn như OFB, CTR hoặc CFB, chuyển đổi một thuật toán mã hóa khối thành một thuật toán mã hóa dòng (stream cipher)
+
+> **AES.MODE_OFB**  
+>
+> Thay vì mã hóa trực tiếp bản rõ (plaintext), thuật toán AES trong chế độ OFB chỉ dùng để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
+>$$KS_1 = \text{AES\_Encrypt}_K(IV)$$
+>$$...$$
+>$$KS_i = \text{AES\_Encrypt}_K(KS_{i-1})$$
+> - Mã hóa (encrypt):
+>$$C_i = P_i \oplus KS_i$$
+> - Giải mã (decrypt):
+>$$P_i = C_i \oplus KS_i$$
+> Ta thấy phép mã hóa cũng chính là phép giải mã
+
+
+Bài này giới thiệu chế độ mã hóa `AES.MODE_OFB`, và đặc điểm của chế độ này là nó **'Symmetry'** (đối xứng), thuật encrypt cũng là thuật decrypt.  
+
+Hàm `encrypt_flag()` sẽ trả về $IV$ và ciphertext của flag đã được encrypt mode OFB.  
+Để giải mã ta chỉ cần dùng hàm `encrypt(plaintext, iv)` vừa là hàm mã hóa vừa là hàm giải mã để giải mã.
+
+### 3. Lời giải
+![Lấy ciphertext đã mã hóa từ flag](/images/post/symmetric-ciphers/image-1793292863263.png)
+![lấy iv là 16 bytes đầu của ciphertext lấy từ encrypt_flag()`](/images/post/symmetric-ciphers/image-1793292969411.png)
+![](/images/post/symmetric-ciphers/image-1793293071914.png)
+![
+](/images/post/symmetric-ciphers/image-1793293096285.png)
+
+>**Flag:** crypto{0fb_15_5ymm37r1c4l_!!!11!}
+
+
+
 
