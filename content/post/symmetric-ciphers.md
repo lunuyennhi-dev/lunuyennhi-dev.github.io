@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-30 00:10:57'
+lastmod: '2026-10-30 00:17:59'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -970,7 +970,7 @@ def encrypt_flag():
 ![](/images/post/symmetric-ciphers/image-1793291759856.png)
 > **AES.MODE_OFB**  
 >
-> Thay vì mã hóa trực tiếp bản rõ (plaintext), thuật toán AES trong chế độ OFB chỉ dùng để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
+> Thay vì mã hóa trực tiếp bản rõ (plaintext), chế độ OFB dùng thuật toán AES để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
 >$$KS_1 = \text{AES\_Encrypt}_K(IV)$$
 >$$...$$
 >$$KS_i = \text{AES\_Encrypt}_K(KS_{i-1})$$
@@ -995,7 +995,7 @@ Hàm `encrypt_flag()` sẽ trả về $IV$ và ciphertext của flag đã đư�
 
 >**Flag:** crypto{0fb_15_5ymm37r1c4l_!!!11!}
 
-##Bean Counter
+## Bean Counter
 ### 1. Đề bài
 I've struggled to get PyCrypto's counter mode doing what I want, so I've turned ECB mode into CTR myself. My counter can go both upwards and downwards to throw off cryptanalysts! There's no chance they'll be able to read my picture.
 

@@ -3,7 +3,7 @@ title: Mathematics
 description: Cryptohack challenges
 draft: false
 date: '2026-10-23 23:14:00'
-lastmod: '2026-10-30 00:14:58'
+lastmod: '2026-10-30 00:16:20'
 cover: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 banner: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 math: true
