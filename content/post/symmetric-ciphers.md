@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-30 00:01:29'
+lastmod: '2026-10-30 00:10:57'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -927,7 +927,7 @@ OFB is an obscure cipher mode, with no real benefits these days over using CTR. 
 
 Play at https://aes.cryptohack.org/symmetry
 ### 2. Phân tích
-![](/images/post/symmetric-ciphers/image-1793291759856.png)
+
 Source code
 ``` python 
 from Crypto.Cipher import AES
@@ -963,8 +963,11 @@ def encrypt_flag():
     return {"ciphertext": ciphertext}
 
 ```
->Một số chế độ mã hóa khối, chẳng hạn như OFB, CTR hoặc CFB, chuyển đổi một thuật toán mã hóa khối thành một thuật toán mã hóa dòng (stream cipher)
+>Một số chế độ mã hóa khối, chẳng hạn như OFB, CTR hoặc CFB, chuyển đổi một thuật toán mã hóa khối thành một thuật toán mã hóa dòng (stream cipher).   
+>Ý tưởng đằng sau các thuật toán mã hóa dòng (stream cipher) là tạo ra một chuỗi khóa giả ngẫu nhiên (pseudorandom keystream), sau đó chuỗi này được XOR với bản rõ.   
+>Một ưu điểm của stream cipher là chúng có thể hoạt động trên bản rõ có độ dài bất kỳ mà không yêu cầu padding  
 
+![](/images/post/symmetric-ciphers/image-1793291759856.png)
 > **AES.MODE_OFB**  
 >
 > Thay vì mã hóa trực tiếp bản rõ (plaintext), thuật toán AES trong chế độ OFB chỉ dùng để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
@@ -992,6 +995,58 @@ Hàm `encrypt_flag()` sẽ trả về $IV$ và ciphertext của flag đã đư�
 
 >**Flag:** crypto{0fb_15_5ymm37r1c4l_!!!11!}
 
+##Bean Counter
+### 1. Đề bài
+I've struggled to get PyCrypto's counter mode doing what I want, so I've turned ECB mode into CTR myself. My counter can go both upwards and downwards to throw off cryptanalysts! There's no chance they'll be able to read my picture.
+
+Play at https://aes.cryptohack.org/bean_counter
+### 2. Phân tích
+Source code 
+``` python 
+from Crypto.Cipher import AES
+import os
 
 
+KEY = ?
+
+
+class StepUpCounter(object):
+    def __init__(self, step_up=False):
+        self.value = os.urandom(16).hex()
+        self.step = 1
+        self.stup = step_up
+
+    def increment(self):
+        if self.stup:
+            self.newIV = hex(int(self.value, 16) + self.step)
+        else:
+            self.newIV = hex(int(self.value, 16) - self.stup)
+        self.value = self.newIV[2:len(self.newIV)]
+        return bytes.fromhex(self.value.zfill(32))
+
+    def __repr__(self):
+        self.increment()
+        return self.value
+
+
+
+@chal.route('/bean_counter/encrypt/')
+def encrypt():
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    ctr = StepUpCounter()
+
+    out = []
+    with open("challenge_files/bean_flag.png", 'rb') as f:
+        block = f.read(16)
+        while block:
+            keystream = cipher.encrypt(ctr.increment())
+            xored = [a^b for a, b in zip(block, keystream)]
+            out.append(bytes(xored).hex())
+            block = f.read(16)
+
+    return {"encrypted": ''.join(out)}
+```
+![](/images/post/symmetric-ciphers/image-1793293819665.png)
+
+### 3. Lời giải
 
