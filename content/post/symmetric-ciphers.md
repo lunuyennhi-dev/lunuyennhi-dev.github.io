@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-30 00:17:59'
+lastmod: '2026-10-31 00:24:16'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -892,7 +892,7 @@ Hàm mã hóa `DES3`có nguyên tắc encrypt như sao:
 $$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext)))$$
 Bài thêm một bước XOR với $IV$, quá trình encrypt của hàm `encrypt(key, plaintext)` là:
 $$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext \oplus IV))) \oplus IV$$
-nhưng $IV$ của bài chỉ khởi tạo 1 lần chứ không ngẫu nhiên mỗi lần mã hóa, và chỉ XOR độc lập theo từng khối nên hàm mã hóa trên vẫn không thay đổi tính chất.
+
 
 Bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn sau:
 - Lựa chọn 1: $K_1$,$K_2$,$K_3$ là các khóa độc lập
@@ -1001,7 +1001,24 @@ I've struggled to get PyCrypto's counter mode doing what I want, so I've turned 
 
 Play at https://aes.cryptohack.org/bean_counter
 ### 2. Phân tích
-Source code 
+![](/images/post/symmetric-ciphers/image-1793293819665.png)
+> **Chế độ Mã hóa CTR (Counter Mode)**
+>
+> Chế độ Mã hóa CTR (Counter Mode) là một trong những chế độ vận hành mã hóa khối (Block Cipher Mode of Operation) phổ biến và an toàn nhất hiện nay. Điểm đặc trưng của CTR là biến một thuật toán mã hóa khối (như AES, DES, Camellia) thành một mã hóa dòng (Stream Cipher) hoàn chỉnh.   
+>Thay vì trực tiếp mã hóa văn bản gốc (Plaintext), thuật toán mã hóa một chuỗi các biến đếm (Counter) độc lập để tạo ra chuỗi Keystream. Sau đó, Keystream được kết hợp với Plaintext bằng phép toán XOR. 
+>
+> Encryption:
+> - Khởi tạo chuỗi đếm:$$T_i = \text{Nonce} \parallel \text{Counter}_i$$
+> - Sinh Keystream:$$K_i = E_{K}(T_i)$$
+> - Mã hóa khối:$$C_i = P_i \oplus K_i$$
+> Decryption:
+> - Sinh lại Keystream:$$K_i = E_{K}(T_i)$$
+> - Khôi phục Plaintext:$$P_i = C_i \oplus K_i$$
+>
+>Trong đó:
+> - $\text{Nonce}$ (Number used once): Chuỗi định danh ngẫu nhiên hoặc duy nhất cho mỗi phiên mã hóa.
+>- $\text{Counter}_i$: Biến đếm tăng dần cho mỗi khối ($0, 1, 2, \dots$).
+
 ``` python 
 from Crypto.Cipher import AES
 import os
@@ -1046,7 +1063,37 @@ def encrypt():
 
     return {"encrypted": ''.join(out)}
 ```
-![](/images/post/symmetric-ciphers/image-1793293819665.png)
+Phân tích source code:
+- Class `StepUpCounter()` tạo ra chuỗi IV 16 bytes thay đổi sau mỗi block 16 bytes của ciphertext.'
+- Hàm `increment(self)`
+```python
+def increment(self):
+    if self.stup:
+        self.newIV = hex(int(self.value, 16) + self.step)
+    else:
+        self.newIV = hex(int(self.value, 16) - self.stup)
+    self.value = self.newIV[2:len(self.newIV)]
+    return bytes.fromhex(self.value.zfill(32))
+```
+là hàm tạo IV mới. Trong đó hàm sẽ kiểm tra `self.stup`: 
+- Nếu True sẽ thực hiện + `self.step` hay biến đếm +1
+- Nếu False sẽ sẽ thực hiện - `self.stup` 
+Nhưng nếu không truyền dữ liệu, giá trị cố định của step_up=False nên sẽ thực hiện  `self.newIV = hex(int(self.value, 16) - self.stup)` hay `self.newIV = hex(int(self.value, 16))` vì self.stup=0.  
+Khi đó, giá trị IV mới bằng IV cũ hay keystream = AES_encrypt(IV) bị trùng lặp, dùng cùng 1 keystream cho tất cả các khối.  
+Vậy chỉ cần khôi phục keystream đầu ta có thể mã hóa hết ciphertext bằng cách xor mỗi khối với keystream.  
+Vì file mã hóa là png nên ta biết được khối plaintext 16 bytes đầu tiên sẽ là: `89504e470d0a1a0a0000000d49484452`.
+Ta có thể dễ dàng khôi phục keystream của khối bằng cách xor plaintext đã biết với ciphertext encrypted.
+
+
 
 ### 3. Lời giải
+```python
+import requests
+c = bytes.fromhex(requests.get("https://aes.cryptohack.org/bean_counter/encrypt/").json()["encrypted"])
+known = bytes.fromhex("89504e470d0a1a0a0000000d49484452")
+keystream = bytes(a ^ b for a, b in zip(c, known))
+open("flag.png", "wb").write(bytes(b ^ keystream[i % 16] for i, b in enumerate(c)))
+```
+![flag.png](/images/post/symmetric-ciphers/image-1793379544052.png)
+>**Flag:** crypto{hex_bytes_beans}
 
