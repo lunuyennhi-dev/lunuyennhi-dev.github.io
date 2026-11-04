@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-31 00:24:16'
+lastmod: '2026-11-04 16:37:19'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,6 +14,7 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
+# How AES Works
 ## Bringing It All Together
 
 ### 1. Đề bài
@@ -180,6 +181,7 @@ if __name__ == "__main__":
 ```
 
 > **Flag:** crypto{MYAES128}
+# Symmetric Starter
 ## Modes of Operation Starter
 ### 1. Đề bài 
 The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
@@ -452,6 +454,7 @@ crypto{p3n6u1n5_h473_3cb}
 FLAG: crypto{p3n6u1n5_h473_3cb}
 ```
 > **Flag:**  crypto{p3n6u1n5_h473_3cb}
+# Block Ciphers 1
 ## ECB CBC WTF
 ### 1. Đề bài
 Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
@@ -919,6 +922,7 @@ Vậy với cặp khóa yếu, việc lấy được flag trở nên đơn giả
 ![](/images/post/symmetric-ciphers/image-1793177661940.png)
 ![](/images/post/symmetric-ciphers/image-1793177686793.png)
 >**Flag:** crypto{n0t_4ll_k3ys_4r3_g00d_k3ys}
+# Stream Ciphers
 ## Symmetry
 ### 1. Đề bài 
 Some block cipher modes, such as OFB, CTR, or CFB, turn a block cipher into a stream cipher. The idea behind stream ciphers is to produce a pseudorandom keystream which is then XORed with the plaintext. One advantage of stream ciphers is that they can work of plaintext of arbitrary length, with no padding required.
