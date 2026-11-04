@@ -3,7 +3,7 @@ title: Symmetric Ciphers
 description: Cryptohack challenges
 draft: false
 date: '2026-10-21'
-lastmod: '2026-10-30 00:10:57'
+lastmod: '2026-11-04 16:54:54'
 cover: /images/covers/cryptohack.webp
 banner: /images/covers/cryptohack.webp
 math: true
@@ -14,13 +14,14 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/cryptohack.webp)
-## Bringing It All Together
+## How AES Works
+### Bringing It All Together
 
-### 1. Đề bài
+#### 1. Đề bài
 ![Structure2](/images/post/cryptohack/image-1792546459907.png)
 We've provided the key expansion code, and ciphertext that's been properly encrypted by AES-128. Copy in all the building blocks you've coded so far, and complete the decrypt function that implements the steps shown in the diagram. The decrypted plaintext is the flag.
 
-### 2. Phân tích 
+#### 2. Phân tích 
 
 Bài này yêu cầu ta xây dựng 1 cấu trúc giải mã AES-128 ($N_{rounds} = 10$) từ các kiến thức đã học được từ các bài trước.  
 Cụ thể ta cần giải mã ngược dựa theo cấu trúc mã hóa:
@@ -35,7 +36,7 @@ from Crypto.Cipher import AES
 plaintext = AES.new(key, AES.MODE_ECB).decrypt(ciphertext)
 print(plaintext)
 ```
-### 3. Lời giải
+#### 3. Lời giải
 
 ```python
 N_ROUNDS = 10
@@ -180,13 +181,14 @@ if __name__ == "__main__":
 ```
 
 > **Flag:** crypto{MYAES128}
-## Modes of Operation Starter
-### 1. Đề bài 
+## Symmetric Starter
+### Modes of Operation Starter
+#### 1. Đề bài 
 The previous set of challenges showed how AES performs a keyed permutation on a block of data. In practice, we need to encrypt messages much longer than a single block. A mode of operation describes how to use a cipher like AES on longer messages.
 
 All modes have serious weaknesses when used incorrectly. The challenges in this category take you to a different section of the website where you can interact with APIs and exploit those weaknesses. Get yourself acquainted with the interface and use it to take your next flag!
 Play at https://aes.cryptohack.org/block_cipher_starter
-### 2. Phân tích
+#### 2. Phân tích
 Truy cập đường link ta thấy được hình ảnh mô tả thuật mã hóa và source code của nó 
 
 ``` python 
@@ -224,7 +226,7 @@ def encrypt_flag():
 >- Ở chế độ này, `plaintext` được chia thành các khối 16 bytes độc lập và mỗi khối đều dùng chung một `Key` để mã hóa ra các khối `Ciphertext` riêng biệt. 
 
 Mục đích chính của bài là giới thiệu mode ECB và giúp ta làm quen với giao diện tương tác API của CryptoHack.
-### 3. Lời giải
+#### 3. Lời giải
 Trên giao diện web, có thể lấy được flag qua các bước sau:
 - Nhấn nút SUBMIT ở mục ENCRYPT_FLAG() -> nhận về JSON chứa `ciphertext`.
 
@@ -252,8 +254,8 @@ flag = bytes.fromhex(plaintext_hex).decode('utf-8')
 print(f"[+] Flag: {flag}")
 ```
 > **Flag:** crypto{bl0ck_c1ph3r5_4r3_f457_!}
-## Passwords as Keys
-### 1. Đề bài
+### Passwords as Keys
+#### 1. Đề bài
 It is essential that keys in symmetric-key algorithms are random bytes, instead of passwords or other predictable data. The random bytes should be generated using a cryptographically-secure pseudorandom number generator (CSPRNG). If the keys are predictable in any way, then the security level of the cipher is reduced and it may be possible for an attacker who gets access to the ciphertext to decrypt it.
 
 Just because a key looks like it is formed of random bytes, does not mean that it necessarily is. In this case the key has been derived from a simple password using a hashing function, which makes the ciphertext crackable.
@@ -261,7 +263,7 @@ Just because a key looks like it is formed of random bytes, does not mean that i
 For this challenge you may script your HTTP requests to the endpoints, or alternatively attack the ciphertext offline. Good luck!
 
 Play at https://aes.cryptohack.org/passwords_as_keys
-### 2. Phân tích 
+#### 2. Phân tích 
 ![](/images/post/cryptohack/image-1792592244701.png)
 Source code: 
 ``` python 
@@ -304,7 +306,7 @@ def encrypt_flag():
 Bài này vẫn là chế độ AES-ECB, nhưng `key` không còn cố định mà được lấy ngẫu nhiên một từ trong danh sách từ điển (words), sau đó băm MD5 để làm KEY 16 bytes (128 bits) cho AES.   
 Để giải quyết bài này ta cần brute force, giải mã với lần lượt các `key` được tạo từ danh sách và dừng lại đến khi lấy được chuỗi bắt đầu với **crypto{**.
 
-### 3. Lời giải
+#### 3. Lời giải
 ``` python 
 import hashlib
 import requests
@@ -331,12 +333,12 @@ for word in words:
         break
 ```
 > **Flag:** crypto{k3y5__r__n07__p455w0rdz?}
-## ECB Oracle
-### 1. Đề bài 
+### ECB Oracle
+#### 1. Đề bài 
 ECB is the most simple mode, with each plaintext block encrypted entirely independently. In this case, your input is prepended to the secret flag and encrypted and that's it. We don't even provide a decrypt function. Perhaps you don't need a padding oracle when you have an "ECB oracle"?
 
 Play at https://aes.cryptohack.org/ecb_oracle
-### 2. Phân tích 
+#### 2. Phân tích 
 ![](/images/post/cryptohack/image-1792592244701.png)
 Source code:
 ``` python 
@@ -396,7 +398,7 @@ Phân tích source code:
 > Dừng vòng lặp khi ký tự tìm được là dấu đóng ngoặc }   
 
 Áp dụng thuật tấn công **AES ECB Oracle** với FLAG đã biết 7 bytes đầu **crypto{**
-### 3. Lời giải
+#### 3. Lời giải
 ``` python 
 import requests
 
@@ -452,12 +454,13 @@ crypto{p3n6u1n5_h473_3cb}
 FLAG: crypto{p3n6u1n5_h473_3cb}
 ```
 > **Flag:**  crypto{p3n6u1n5_h473_3cb}
-## ECB CBC WTF
-### 1. Đề bài
+## Block Ciphers 1
+### ECB CBC WTF
+#### 1. Đề bài
 Here you can encrypt in CBC but only decrypt in ECB. That shouldn't be a weakness because they're different modes... right?
 
 Play at https://aes.cryptohack.org/ecbcbcwtf
-### 2. Chế độ CBC (Cipher Block Chaining)
+#### 2. Chế độ CBC (Cipher Block Chaining)
 
 ![](/images/post/cryptohack/image-1792653145489.png)
 
@@ -478,7 +481,7 @@ Play at https://aes.cryptohack.org/ecbcbcwtf
 - **Nhược điểm**: 
     - **Mã hóa tuần tự**: Không thể song song hóa (parallelize) quá trình mã hóa vì block sau phụ thuộc vào kết quả của block trước (tuy nhiên quá trình giải mã thì vẫn song song hóa được) 
     - **Nhạy cảm với Padding** (Bit-Flip & Padding Oracle Attack): Nếu tấn công thay đổi 1 bit trên $C_{i-1}$, khi giải mã thì $P_i$ sẽ bị biến đổi tương ứng ở đúng vị trí bit đó. Đây là cơ sở cho các dạng bài tấn công CBC Bit-Flip và Padding Oracle Attack.
-### 3. Phân tích
+#### 3. Phân tích
 Phân tích source code:  
 ``` python 
 from Crypto.Cipher import AES
@@ -517,7 +520,7 @@ def encrypt_flag():
 
 Ta thấy để giải mã mode CBC cần XOR Ciphertext đã được decrypt của khối hiện tại với Ciphertext khối trước đó (IV đối với khối đầu tiên)để lấy được Plaintext của khối hiện tại.  
 Vậy ta chỉ cần thêm bước XOR local để khôi phục lại plaintext và nối các khối plaintext để lấy được flag cuối cùng.
-### 4. Lời giải 
+#### 4. Lời giải 
 ``` python 
 import requests
 
@@ -544,12 +547,12 @@ flag= b"".join(P)
 print(flag)
 ```
 > **Flag:** crypto{3cb_5uck5_4v01d_17_!!!!!}
-## Flipping cookie
-### 1. Đề bài 
+### Flipping cookie
+#### 1. Đề bài 
 You can get a cookie for my website, but it won't help you read the flag... I think.
 
 Play at https://aes.cryptohack.org/flipping_cookie
-### 2. Phân tích 
+#### 2. Phân tích 
 Source code:
 ``` python 
 from Crypto.Cipher import AES
@@ -619,7 +622,7 @@ Trong đó:
 - $P_{0}$ : Khối plaintext gốc chứa b"admin=Fals"
 - $IV$ : Khối ciphertext đầu trả về của hàm `get_cookie`
 - $P_{0}'$ : Khối plaintext mục tiêu chứa b"admin=True"
-### 3. Lời giải
+#### 3. Lời giải
 ``` python
 import requests
 
@@ -651,12 +654,12 @@ data = response.json()
 print(data["flag"])
 ```
 >**Flag:** crypto{4u7h3n71c4710n_15_3553n714l}
-## Lazy CBC 
-### 1. Đề bài 
+### Lazy CBC 
+#### 1. Đề bài 
 I'm just a lazy dev and want my CBC encryption to work. What's all this talk about initialisations vectors? Doesn't sound important.
 
 Play at https://aes.cryptohack.org/lazy_cbc
-### 2. Phân tích 
+#### 2. Phân tích 
 Source code:
 ``` python
 from Crypto.Cipher import AES
@@ -717,7 +720,7 @@ $$P_1 \oplus P_2= D_K(C_1) \oplus IV \oplus D_K(C_2) \oplus C_1$$
 Nếu chọn các giá trị $C_1$, $C_2$ đều bằng 0, ta sẽ được
 $$P_1 \oplus P_2= D_K(0) \oplus IV \oplus D_K(0) \oplus 0= IV$$
 Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) vào hàm `receive(ciphertext)` lúc này khối plaintext trả về sẽ khác ASCII nên chương trình sẽ trả plaintext đã được decrypt cho ta, XOR 2 khối plaintext nhận được và lấy được key dạng hex.
-### 3. Lời giải
+#### 3. Lời giải
 ![](/images/post/symmetric-ciphers/image-1792750413627.png)
 ![](/images/post/symmetric-ciphers/image-1792750420184.png)
 ![](/images/post/symmetric-ciphers/image-1792750425410.png)
@@ -725,8 +728,8 @@ Vậy ta nhập ciphertext là 2 khối 0 16 bytes ( 32x2 số 0 dạng hex) và
 ![](/images/post/symmetric-ciphers/image-1792750432933.png)
 ![](/images/post/symmetric-ciphers/image-1792750437433.png)
 > **Flag:** crypto{50m3_p30pl3_d0n7_7h1nk_IV_15_1mp0r74n7_?}
-## Double DES (DH)
-### 1. Đề bài
+### Double DES (DH)
+#### 1. Đề bài
 It's as simple as a 4-byte full survey!
 
 This is a problem we practice together in **Exploit Tech: Meet in the Middle Attack.**  
@@ -760,7 +763,7 @@ if __name__ == "__main__":
     else:
         print("Nope!")
 ```
-### 2. Phân tích 
+#### 2. Phân tích 
 Phân tích source code:
 -  `signal.alarm(15)` giới hạn thời gian trong 15s
 -  ` key = b'Dream_' + os.urandom(4) + b'Hacker'` key được tạo bằng cách chọn ngẫu nhiên 4 số, ghép vào giữa 2 phần text có sẵn là b'Dream_' và b'Hacker'. Key sau đó được tách thành key1 và key2  `key1 = key[:8]` `key2 = key[8:]` key1 8 bytes đầu, key2 8 bytes cuối
@@ -791,7 +794,7 @@ $$ \iff D_{K2}(hint)= E_{K1}('DreamHack\_blocks')$$
 Vậy ta có thể brute-force 2 bytes ở từng key rồi dừng lại khi có giá trị thỏa mãn hai phép $D_{K2}(hint)$ và $E_{K1}('DreamHack\_blocks')$ cho giá trị giống nhau.  
 Tới đây ta có thể dùng `dict` hoặc `set` trong Python để duyệt dữ liệu và chỉ dùng 2 vòng for độc lập, số lần thử $2^{16}$+$2^{16}$.
 
-### 3. Lời giải 
+#### 3. Lời giải 
 ``` python 
 from pwn import *
 from Crypto.Cipher import DES
@@ -830,12 +833,12 @@ io.close()
 
 print(flag.decode())
 ```
-## Triple DES
-### 1. Đề bài
+### Triple DES
+#### 1. Đề bài
 Data Encryption Standard was the forerunner to AES, and is still widely used in some slow-moving areas like the Payment Card Industry. This challenge demonstrates a strange weakness of DES which a secure block cipher should not have.
 
 Play at https://aes.cryptohack.org/triple_des
-### 2. Phân tích
+#### 2. Phân tích
 Source code 
 ``` python
 from Crypto.Cipher import DES3
@@ -892,7 +895,7 @@ Hàm mã hóa `DES3`có nguyên tắc encrypt như sao:
 $$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext)))$$
 Bài thêm một bước XOR với $IV$, quá trình encrypt của hàm `encrypt(key, plaintext)` là:
 $$ciphertext= E_{K3}(D_{K2}(E_{K1}(plaintext \oplus IV))) \oplus IV$$
-nhưng $IV$ của bài chỉ khởi tạo 1 lần chứ không ngẫu nhiên mỗi lần mã hóa, và chỉ XOR độc lập theo từng khối nên hàm mã hóa trên vẫn không thay đổi tính chất.
+
 
 Bộ khóa ($K_1$,$K_2$,$K_3$) có các tiêu chuẩn lựa chọn sau:
 - Lựa chọn 1: $K_1$,$K_2$,$K_3$ là các khóa độc lập
@@ -913,20 +916,21 @@ $$ = D_{K2}(D_{K2}(pt \oplus IV)) \oplus IV$$
 $$=pt \oplus IV\oplus IV=pt$$
 
 Vậy với cặp khóa yếu, việc lấy được flag trở nên đơn giản, ta chỉ cần encrypt phần ciphertext encrypt của flag (hay encrypt flag 2 lần), ciphertext trở về chính là flag đã được giải mã!
-### 3. Lời giải
+#### 3. Lời giải
 ![](/images/post/symmetric-ciphers/image-1793177578402.png)
 ![](/images/post/symmetric-ciphers/image-1793177624018.png)
 ![](/images/post/symmetric-ciphers/image-1793177661940.png)
 ![](/images/post/symmetric-ciphers/image-1793177686793.png)
 >**Flag:** crypto{n0t_4ll_k3ys_4r3_g00d_k3ys}
-## Symmetry
-### 1. Đề bài 
+## Stream Ciphers
+### Symmetry
+#### 1. Đề bài 
 Some block cipher modes, such as OFB, CTR, or CFB, turn a block cipher into a stream cipher. The idea behind stream ciphers is to produce a pseudorandom keystream which is then XORed with the plaintext. One advantage of stream ciphers is that they can work of plaintext of arbitrary length, with no padding required.
 
 OFB is an obscure cipher mode, with no real benefits these days over using CTR. This challenge introduces an unusual property of OFB.
 
 Play at https://aes.cryptohack.org/symmetry
-### 2. Phân tích
+#### 2. Phân tích
 
 Source code
 ``` python 
@@ -970,7 +974,7 @@ def encrypt_flag():
 ![](/images/post/symmetric-ciphers/image-1793291759856.png)
 > **AES.MODE_OFB**  
 >
-> Thay vì mã hóa trực tiếp bản rõ (plaintext), thuật toán AES trong chế độ OFB chỉ dùng để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
+> Thay vì mã hóa trực tiếp bản rõ (plaintext), chế độ OFB dùng thuật toán AES để mã hóa $IV$ và các đầu ra tiếp theo của chính nó để sinh ra `keystream`
 >$$KS_1 = \text{AES\_Encrypt}_K(IV)$$
 >$$...$$
 >$$KS_i = \text{AES\_Encrypt}_K(KS_{i-1})$$
@@ -986,7 +990,7 @@ Bài này giới thiệu chế độ mã hóa `AES.MODE_OFB`, và đặc điểm
 Hàm `encrypt_flag()` sẽ trả về $IV$ và ciphertext của flag đã được encrypt mode OFB.  
 Để giải mã ta chỉ cần dùng hàm `encrypt(plaintext, iv)` vừa là hàm mã hóa vừa là hàm giải mã để giải mã.
 
-### 3. Lời giải
+#### 3. Lời giải
 ![Lấy ciphertext đã mã hóa từ flag](/images/post/symmetric-ciphers/image-1793292863263.png)
 ![lấy iv là 16 bytes đầu của ciphertext lấy từ encrypt_flag()`](/images/post/symmetric-ciphers/image-1793292969411.png)
 ![](/images/post/symmetric-ciphers/image-1793293071914.png)
@@ -995,13 +999,30 @@ Hàm `encrypt_flag()` sẽ trả về $IV$ và ciphertext của flag đã đư�
 
 >**Flag:** crypto{0fb_15_5ymm37r1c4l_!!!11!}
 
-##Bean Counter
-### 1. Đề bài
+### Bean Counter
+#### 1. Đề bài
 I've struggled to get PyCrypto's counter mode doing what I want, so I've turned ECB mode into CTR myself. My counter can go both upwards and downwards to throw off cryptanalysts! There's no chance they'll be able to read my picture.
 
 Play at https://aes.cryptohack.org/bean_counter
-### 2. Phân tích
-Source code 
+#### 2. Phân tích
+![](/images/post/symmetric-ciphers/image-1793293819665.png)
+> **Chế độ Mã hóa CTR (Counter Mode)**
+>
+> Chế độ Mã hóa CTR (Counter Mode) là một trong những chế độ vận hành mã hóa khối (Block Cipher Mode of Operation) phổ biến và an toàn nhất hiện nay. Điểm đặc trưng của CTR là biến một thuật toán mã hóa khối (như AES, DES, Camellia) thành một mã hóa dòng (Stream Cipher) hoàn chỉnh.   
+>Thay vì trực tiếp mã hóa văn bản gốc (Plaintext), thuật toán mã hóa một chuỗi các biến đếm (Counter) độc lập để tạo ra chuỗi Keystream. Sau đó, Keystream được kết hợp với Plaintext bằng phép toán XOR. 
+>
+> Encryption:
+> - Khởi tạo chuỗi đếm:$$T_i = \text{Nonce} \parallel \text{Counter}_i$$
+> - Sinh Keystream:$$K_i = E_{K}(T_i)$$
+> - Mã hóa khối:$$C_i = P_i \oplus K_i$$
+> Decryption:
+> - Sinh lại Keystream:$$K_i = E_{K}(T_i)$$
+> - Khôi phục Plaintext:$$P_i = C_i \oplus K_i$$
+>
+>Trong đó:
+> - $\text{Nonce}$ (Number used once): Chuỗi định danh ngẫu nhiên hoặc duy nhất cho mỗi phiên mã hóa.
+>- $\text{Counter}_i$: Biến đếm tăng dần cho mỗi khối ($0, 1, 2, \dots$).
+
 ``` python 
 from Crypto.Cipher import AES
 import os
@@ -1046,7 +1067,37 @@ def encrypt():
 
     return {"encrypted": ''.join(out)}
 ```
-![](/images/post/symmetric-ciphers/image-1793293819665.png)
+Phân tích source code:
+- Class `StepUpCounter()` tạo ra chuỗi IV 16 bytes thay đổi sau mỗi block 16 bytes của ciphertext.'
+- Hàm `increment(self)`
+```python
+def increment(self):
+    if self.stup:
+        self.newIV = hex(int(self.value, 16) + self.step)
+    else:
+        self.newIV = hex(int(self.value, 16) - self.stup)
+    self.value = self.newIV[2:len(self.newIV)]
+    return bytes.fromhex(self.value.zfill(32))
+```
+là hàm tạo IV mới. Trong đó hàm sẽ kiểm tra `self.stup`: 
+- Nếu True sẽ thực hiện + `self.step` hay biến đếm +1
+- Nếu False sẽ sẽ thực hiện - `self.stup` 
+Nhưng nếu không truyền dữ liệu, giá trị cố định của step_up=False nên sẽ thực hiện  `self.newIV = hex(int(self.value, 16) - self.stup)` hay `self.newIV = hex(int(self.value, 16))` vì self.stup=0.  
+Khi đó, giá trị IV mới bằng IV cũ hay keystream = AES_encrypt(IV) bị trùng lặp, dùng cùng 1 keystream cho tất cả các khối.  
+Vậy chỉ cần khôi phục keystream đầu ta có thể mã hóa hết ciphertext bằng cách xor mỗi khối với keystream.  
+Vì file mã hóa là png nên ta biết được khối plaintext 16 bytes đầu tiên sẽ là: `89504e470d0a1a0a0000000d49484452`.
+Ta có thể dễ dàng khôi phục keystream của khối bằng cách xor plaintext đã biết với ciphertext encrypted.
 
-### 3. Lời giải
+
+
+#### 3. Lời giải
+```python
+import requests
+c = bytes.fromhex(requests.get("https://aes.cryptohack.org/bean_counter/encrypt/").json()["encrypted"])
+known = bytes.fromhex("89504e470d0a1a0a0000000d49484452")
+keystream = bytes(a ^ b for a, b in zip(c, known))
+open("flag.png", "wb").write(bytes(b ^ keystream[i % 16] for i, b in enumerate(c)))
+```
+![flag.png](/images/post/symmetric-ciphers/image-1793379544052.png)
+>**Flag:** crypto{hex_bytes_beans}
 
