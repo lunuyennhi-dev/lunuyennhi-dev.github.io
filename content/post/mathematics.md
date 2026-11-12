@@ -3,7 +3,7 @@ title: Mathematics
 description: Cryptohack challenges
 draft: false
 date: '2026-10-23 23:14:00'
-lastmod: '2026-11-11 13:00:33'
+lastmod: '2026-11-12 14:44:18'
 cover: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 banner: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 math: true
@@ -88,6 +88,67 @@ Tham khảo về thuật toán **Tonelli-Shanks**: https://arxiv.org/html/2008.1
 Thư viện `sympy` của python3 cung cấp cho ta công cụ để tính square root của 1 thặng dư bình phương 1 cách dễ dàng bằng hàm `sqrt_mod`.
 
 ### 3. Lời giải
+```python
+def legendre_symbol(a, p):
+    return pow(a, (p - 1) // 2, p)
+
+def tonelli_shanks(a, p):
+    a %= p
+    if a == 0:
+        return 0
+    if p == 2:
+        return a
+
+    if legendre_symbol(a, p) != 1:
+        raise ValueError("a không phải là thặng dư bậc hai modulo p ")
+
+    # Trường hợp p ≡ 3 (mod 4)
+    if p % 4 == 3:
+        return pow(a, (p + 1) // 4, p)
+
+    q = p - 1
+    s = 0
+    while q % 2 == 0:
+        q //= 2
+        s += 1
+    z = 2
+    while legendre_symbol(z, p) != p - 1:
+        z += 1
+
+    m = s
+    c = pow(z, q, p)
+    t = pow(a, q, p)
+    r = pow(a, (q + 1) // 2, p)
+
+    while t != 1:
+        if t == 0:
+            return 0
+        
+        i = 1
+        temp = (t * t) % p
+        while temp != 1:
+            temp = (temp * temp) % p
+            i += 1
+
+        b = pow(c, 1 << (m - i - 1), p)
+        m = i
+        c = (b * b) % p
+        t = (t * c) % p
+        r = (r * b) % p
+
+    return r
+
+a = 8479994658316772151941616510097127087554541274812435112009425778595495359700244470400642403747058566807127814165396640215844192327900454116257979487432016769329970767046735091249898678088061634796559556704959846424131820416048436501387617211770124292793308079214153179977624440438616958575058361193975686620046439877308339989295604537867493683872778843921771307305602776398786978353866231661453376056771972069776398999013769588936194859344941268223184197231368887060609212875507518936172060702209557124430477137421847130682601666968691651447236917018634902407704797328509461854842432015009878011354022108661461024768
+
+p = 30531851861994333252675935111487950694414332763909083514133769861350960895076504687261369815735742549428789138300843082086550059082835141454526618160634109969195486322015775943030060449557090064811940139431735209185996454739163555910726493597222646855506445602953689527405362207926990442391705014604777038685880527537489845359101552442292804398472642356609304810680731556542002301547846635101455995732584071355903010856718680732337369128498655255277003643669031694516851390505923416710601212618443109844041514942401969629158975457079026906304328749039997262960301209158175920051890620947063936347307238412281568760161
+
+r1 = tonelli_shanks(a, p)
+r2 = p - r1 
+
+print(r1, r2)
+```
+Lời giải dùng hàm có sẵn của thư viện sympy:
+
 ```python
 from sympy import sqrt_mod
 
@@ -387,5 +448,94 @@ n = 2777285740987525752941599091121421197584430718443024145189940783875050302432
 e = 16
 ct = 11303174761894431146735697569489134747234975144162172162401674567273034831391936916397234068346115459134602443963604063679379285919302225719050193590179240191429612072131629779948379821039610415099784351073443218911356328815458050694493726951231241096695626477586428880220528001269746547018741237131741255022371957489462380305100634600499204435763201371188769446054925748151987175656677342779043435047048130599123081581036362712208692748034620245590448762406543804069935873123161582756799517226666835316588896306926659321054276507714414876684738121421124177324568084533020088172040422767194971217814466953837590498718
 ```
-Ta thấy e=16 và n,ct là các số rất lớn
+Kiểm tra với hàm `is_pseudoprime()` của sage, ta thấy n là 1 số nguyên tố lớn
+![](/images/post/mathematics/image-1794465903201.png)
+Vì $e =16 = 2^4$ nên thực chất quá trình mã hóa là bình phương bản rõ `pt` 4 lần, modulo n
+
+Với n là số nguyên tố ta có thể tính chính xác căn bậc hai của thặng dư bậc hai modulo n một cách dễ dàng, sử dụng thuật toán **Tonelli-Shanks** hay các hàm có sẵn.  
+
+Ta cần lấy căn bình phương modulo n 4 lần, mỗi lần cho ra 2 nghiệm nên tổng sẽ có tối đa 16 nghiệm, thử từng nghiệm và lấy kết quả chứa flag.  
+
+Sử dụng hàm `_sqrt_mod_prime_power` của `sympy.ntheory.residue_ntheory`, 
+Cú pháp của `_sqrt_mod_prime_power(a,n,k)`  
+- Giải phương trình $x^2 \equiv a \pmod{p^k}$
+- Danh sách trả về là hai nghiệm [r1,r2]
+
+(Không dùng hàm `sqrt_mod(a,p)` vì hàm phải thực hiện `factor(p)` mỗi lần thực hiện, việc `factor(n)` nhiều lần với n là số rất lớn sẽ chạy lâu, sử dụng hàm `_sqrt_mod_prime_power` kết hợp với hàm kiểm tra thặng dư bình phương `is_quad_residue` sẽ tối ưu hơn)
+
+### 3. Lời giải
+```python
+from sympy.ntheory.residue_ntheory import  is_quad_residue, _sqrt_mod_prime_power
+
+n = 27772857409875257529415990911214211975844307184430241451899407838750503024323367895540981606586709985980003435082116995888017731426634845808624796292507989171497629109450825818587383112280639037484593490692935998202437639626747133650990603333094513531505209954273004473567193235535061942991750932725808679249964667090723480397916715320876867803719301313440005075056481203859010490836599717523664197112053206745235908610484907715210436413015546671034478367679465233737115549451849810421017181842615880836253875862101545582922437858358265964489786463923280312860843031914516061327752183283528015684588796400861331354873
+ct = 11303174761894431146735697569489134747234975144162172162401674567273034831391936916397234068346115459134602443963604063679379285919302225719050193590179240191429612072131629779948379821039610415099784351073443218911356328815458050694493726951231241096695626477586428880220528001269746547018741237131741255022371957489462380305100634600499204435763201371188769446054925748151987175656677342779043435047048130599123081581036362712208692748034620245590448762406543804069935873123161582756799517226666835316588896306926659321054276507714414876684738121421124177324568084533020088172040422767194971217814466953837590498718
+
+roots = [ct]
+for step in range(4):
+    next_roots = []
+    for r in roots:
+        if is_quad_residue(r, n):
+            res = _sqrt_mod_prime_power(r, n, 1)
+            next_roots.extend(res)
+    roots = next_roots
+
+for m in roots:
+    m_int = int(m)
+    flag = m_int.to_bytes((m_int.bit_length() + 7) // 8, 'big')
+    if b'crypto{' in flag:
+        print(flag)
+```
 ## No Way Back Home
+### 1. Đề bài
+![](/images/post/mathematics/image-1794469229682.png)
+
+[out.txt](/files/mathematics/out_549f6bbac5f815ee3f197c2248a352cd__1.txt)
+[nowayback.py](/files/mathematics/nowayback_9e0beb8fb2bbb103771ee735a890e387__1.py)
+### 2. Phân tích
+Phân tích source code:
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from hashlib import sha256
+from Crypto.Util.number import getPrime, GCD, bytes_to_long, long_to_bytes, inverse
+from random import randint
+
+FLAG = b'crypto{????????????????????????????????}'
+
+p, q = getPrime(512), getPrime(512)
+n = p * q
+
+# Alice side
+v = (p * randint(1, n)) % n
+k_A = randint(1, n)
+while GCD(k_A, n) != 1:
+    k_A = randint(1, n)
+vka = (v * k_A) % n
+
+# Bob side
+k_B = randint(1, n)
+while GCD(k_B, n) != 1:
+    k_B = randint(1, n)
+vkakb = (vka * k_B) % n
+
+# Alice side
+vkb = (vkakb * inverse(k_A, n)) % n
+
+# Bob side
+v_s = (vkb * inverse(k_B, n)) % n
+
+# Alice side
+key = sha256(long_to_bytes(v)).digest()
+cipher = AES.new(key, AES.MODE_ECB)
+m = pad(FLAG, 16)
+c = cipher.encrypt(m).hex()
+
+out = ""
+out += f"p, q = ({p}, {q}) \n"
+out += f"vka = {vka} \n"
+out += f"vkakb = {vkakb} \n"
+out += f"vkb = {vkb} \n"
+out += f"c = '{c}' \n"
+with open("out.txt", "w") as f:
+    f.write(out)
+```
