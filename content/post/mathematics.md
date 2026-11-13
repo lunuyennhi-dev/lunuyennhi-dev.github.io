@@ -3,7 +3,7 @@ title: Mathematics
 description: Cryptohack challenges
 draft: false
 date: '2026-10-23 23:14:00'
-lastmod: '2026-11-12 14:44:18'
+lastmod: '2026-11-13 16:58:17'
 cover: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 banner: /images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg
 math: true
@@ -14,6 +14,7 @@ categories:
   - Learning
 ---
 ![CryptoHack](/images/covers/0ebed99429f6ddb8d5398d27088112a1.jpg)
+Link: https://cryptohack.org/challenges/maths/
 ## Quadratic Residues
 ### 1. Đề bài
 ![](/images/post/mathematics/image-1793294028640.png)
@@ -456,8 +457,8 @@ Với n là số nguyên tố ta có thể tính chính xác căn bậc hai củ
 
 Ta cần lấy căn bình phương modulo n 4 lần, mỗi lần cho ra 2 nghiệm nên tổng sẽ có tối đa 16 nghiệm, thử từng nghiệm và lấy kết quả chứa flag.  
 
-Sử dụng hàm `_sqrt_mod_prime_power` của `sympy.ntheory.residue_ntheory`, 
-Cú pháp của `_sqrt_mod_prime_power(a,n,k)`  
+Sử dụng hàm `_sqrt_mod_prime_power` của `sympy.ntheory.residue_ntheory`,   
+Cú pháp của `_sqrt_mod_prime_power(a,n,k)`: 
 - Giải phương trình $x^2 \equiv a \pmod{p^k}$
 - Danh sách trả về là hai nghiệm [r1,r2]
 
@@ -539,3 +540,67 @@ out += f"c = '{c}' \n"
 with open("out.txt", "w") as f:
     f.write(out)
 ```
+
+FLAG được mã hóa bằng AES với khóa là $v$.  
+
+Để khôi phục được flag ta cần khôi phục lại $v$, biết giá trị của $p,q,vka,vkakb,vkb$  
+Và các mối liên hệ:
+$$
+\begin{aligned}
+& n=p.q \\
+& v=p.k \pmod n  (k= randint(1, n))\\
+& vka= v . k_A \pmod n \\
+& vkakb= v . k_A .k_B\pmod n \\
+& vkb= v . k_A .k_B. k_A^{-1}\pmod n \\\iff &  vkb=v.k_B \pmod n \\
+& (k_A,n)=1, (k_B,n)=1
+\end{aligned}
+$$
+Ta có:
+$$
+\begin{aligned}
+& vka= v . k_A \pmod n \\
+& vkakb= v . k_A .k_B\pmod n \\ 
+&  vkb=v.k_B \pmod n \\
+\end{aligned}
+$$
+Vì $vka,vkakb,vkb$ đều có ước chung $p$ với $n$ nên không thể lấy nghịch đảo modulo $n$ để khôi phục $v$.
+Ta áp dụng tính chất của modulo: 
+$$A \equiv B \pmod{p \cdot q} \iff \frac{A}{p} \equiv \frac{B}{p} \pmod q$$
+
+$vka,vkakb,vkb,v$ đều chia hết cho $p$. Chia 2 vế modulo cho $p$ ta được
+$$
+\begin{aligned}
+& vka'=vka/p= k . k_A \pmod q \\
+& vkakb'=vkakb/p= k . k_A .k_B\pmod q \\ 
+& vkb'=vkb/p= k.k_B \pmod q \\
+\end{aligned}
+$$
+Lúc này các giá trị $vka/p,vkakb/p,vkb/p$ đều nguyên tố cùng nhau với $q$, ta có thể thực hiện phép nghịch đảo modulo
+$$k= vka'.vkb',vkakb'^{-1} = k.k.k_A.k_B.(k.k_A.k_B)^{-1} \pmod q$$
+Tìm được $k$, ta khôi phục được $v=p.k $ và giải mã được FLAG từ bản mã $c$.
+### 3. Lời giải
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+from hashlib import sha256
+from Crypto.Util.number import long_to_bytes, inverse
+
+p, q = (10699940648196411028170713430726559470427113689721202803392638457920771439452897032229838317321639599506283870585924807089941510579727013041135771337631951, 11956676387836512151480744979869173960415735990945471431153245263360714040288733895951317727355037104240049869019766679351362643879028085294045007143623763)
+vka = 124641741967121300068241280971408306625050636261192655845274494695382484894973990899018981438824398885984003880665335336872849819983045790478166909381968949910717906136475842568208640203811766079825364974168541198988879036997489130022151352858776555178444457677074095521488219905950926757695656018450299948207
+vkakb = 114778245184091677576134046724609868204771151111446457870524843414356897479473739627212552495413311985409829523700919603502616667323311977056345059189257932050632105761365449853358722065048852091755612586569454771946427631498462394616623706064561443106503673008210435922340001958432623802886222040403262923652
+vkb = 6568897840127713147382345832798645667110237168011335640630440006583923102503659273104899584827637961921428677335180620421654712000512310008036693022785945317428066257236409339677041133038317088022368203160674699948914222030034711433252914821805540365972835274052062305301998463475108156010447054013166491083
+c = 'fef29e5ff72f28160027959474fc462e2a9e0b2d84b1508f7bd0e270bc98fac942e1402aa12db6e6a36fb380e7b53323'
+vka = vka // p
+vkb = vkb // p
+vkakb = vkakb // p
+
+k = (vka * vkb * inverse(vkakb, q)) % q
+v = p * k
+
+key = sha256(long_to_bytes(v)).digest()
+cipher = AES.new(key, AES.MODE_ECB)
+flag = unpad(cipher.decrypt(bytes.fromhex(c)), 16)
+
+print(flag.decode())
+```
+
