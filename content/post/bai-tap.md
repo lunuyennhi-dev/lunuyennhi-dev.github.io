@@ -3,7 +3,7 @@ title: BAI TAP
 description: 'Ai cung xung dang duoc hanh phuc ma '
 draft: false
 date: '2026-11-13 22:45:00'
-lastmod: '2026-11-20 16:08:49'
+lastmod: '2026-11-21 01:31:49'
 cover: /images/covers/3a90ad1a95e5fce4dce17a1acbe219ad.jpg
 banner: /images/covers/3a90ad1a95e5fce4dce17a1acbe219ad.jpg
 math: true
@@ -78,13 +78,23 @@ FLAG được mã hóa bằng cách XOR từng kí tự của FLAG với các s�
 Để khôi phục được FLAG ta cần tìm ra quy luật sinh số của hàm `LCG`, hay tìm được 10 cặp (a,b) của `list_ab` và quy luật xáo index.
 
 ### 3. Khai thác
-Tham khảo bài viết: https://crypto.stackexchange.com/questions/20495/how-brittle-are-lcg-cracking-techniques
+Ta có hàm LCG  $$s_{i+1}=a*s_i+b \pmod p$$  
+Vì có 10 bộ (a,b) được sử dụng mà leak cho biết được 30 giá trị khác nhau được sinh ra từ hàm, nên có tồn tại ít nhất 1 bộ (a,b) được sử dụng nhiều hơn 1 lần.
 
-Để tìm được quy luật xáo index với $a_{shuffle},b_{shuffle},p_{shuffle}$ đã biết, ta cần tìm seed khởi tạo.  
-Đây là trường hợp rơi vào 
+Với 1 bộ (a,b) được sử dụng 2 lần, ta lặp được mối quan hệ:
+$$
+\begin{aligned}
+\begin{cases}
+a*X_i+b \equiv X_{i+1} \pmod p\\
+a*X_j+b \equiv X_{j+1} \pmod p
+\end{cases}
+\end{aligned}
+$$
+$\implies a*(X_i-X_j) \equiv (X_{i+1}- X_{j+1})\pmod p$  
+$\implies a\equiv (X_{i+1}- X_{j+1})*(X_i-X_j)^{-1}\pmod p$  
+Khi đó: $b \equiv X_{i+1} -a*X_i\pmod p$
 
-
-
+Vậy với 2 cặp số liên tiếp được sinh ra từ hàm LCG với cùng 1 bộ (a,b) ta có thể khôi phục được bộ (a,b) đó
 ## DE XAM LOZ
 ### 1. Đề bài
 [problem.py](/files/bai-tap/problem.py)
@@ -231,7 +241,11 @@ e = 1311894305637681153139088715896959063301824639386245764937842952904045886038
 c = 18491889164810617543569456750416875989184817880137548014973592642069416208831086398288449741333647958301433206462225905089767171227296166302076329585813204145393998300807912284373441125769784091235480355305999860836226228064817001671079683866140595167104080925862489688205706558563994071054217252661751197090938128540101902284587959897970686920835999487758527543265902558413502613239565915919268373782402562042295965144636399280059309987259722405692758942811072888497222424752062745376152606372092707679048892146955016482797824514120865462676167840311292744307891590740707933408465096337716317714272609074408402855672
 ```
 ### 2. Phân tích
-https://cryptohack.gitbook.io/cryptobook/untitled/low-private-component-attacks/wieners-attack
+Ta để ý thấy public key $e$ là một số rất lớn, gần với $n$, suy ra private key $d=e^{-1} mod(phi_n)$ là một số nhỏ.
+
+Ta có thể sử dụng Low Private Component Attacks: Wiener's Attack
+
+Tham khảo: https://cryptohack.gitbook.io/cryptobook/untitled/low-private-component-attacks/wieners-attack
 ### 3. Lời giải
 ``` sage
 from Crypto.Util.number import long_to_bytes
@@ -295,7 +309,7 @@ if is_correct:
     flag=long_to_bytes(int(m)).decode()
     print(flag)
 ```
-> **Flag:** tachyon{R$4_crypt0gr4phy_i$_e4sy!}
+> **Flag:** tachyon{R\$4_crypt0gr4phy_i\$_e4sy!}
 ## Endians
 ### 1. Đề bài
 [gen.py](/files/bai-tap/gen.py)
