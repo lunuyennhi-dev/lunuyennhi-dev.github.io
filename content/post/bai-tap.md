@@ -3,7 +3,7 @@ title: BAI TAP
 description: 'Ai cung xung dang duoc hanh phuc ma '
 draft: false
 date: '2026-11-13 22:45:00'
-lastmod: '2026-11-21 01:31:49'
+lastmod: '2026-11-21 01:38:06'
 cover: /images/covers/3a90ad1a95e5fce4dce17a1acbe219ad.jpg
 banner: /images/covers/3a90ad1a95e5fce4dce17a1acbe219ad.jpg
 math: true
@@ -309,7 +309,7 @@ if is_correct:
     flag=long_to_bytes(int(m)).decode()
     print(flag)
 ```
-> **Flag:** tachyon{R\$4_crypt0gr4phy_i\$_e4sy!}
+> **Flag:** `tachyon{R$4_crypt0gr4phy_i$_e4sy!}`
 ## Endians
 ### 1. Đề bài
 [gen.py](/files/bai-tap/gen.py)
